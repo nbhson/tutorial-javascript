@@ -9,4 +9,10 @@ Ngoài việc được sử dụng trong trình duyệt, nó cũng được sử
 
 JavaScript (JS) là một ngôn ngữ lập trình nhẹ được thông dịch (hoặc biên dịch đúng lúc) với các first-class function. Mặc dù được biết đến nhiều nhất là ngôn ngữ kịch bản cho các trang Web, nhiều môi trường không phải trình duyệt cũng sử dụng nó, chẳng hạn như Node.js, Apache CouchDB và Adobe Acrobat. 
 
-JavaScript là một ngôn ngữ  prototype-based, garbage-collected, dynamic hỗ trợ nhiều mô hình như imperative, functional, and object-oriented.
+> Executed as plain text by a JavaScript engine (e.g., V8, SpiderMonkey).
+
+JavaScript là một ngôn ngữ prototype-based, garbage-collected, dynamic hỗ trợ nhiều mô hình như imperative, functional, and object-oriented.
+
+Reference: 
+- Mozilla: <https://developer.mozilla.org/en-US/docs/Web/JavaScript>
+- JS_Info: <https://javascript.info/intro>

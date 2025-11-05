@@ -213,6 +213,47 @@ if (global.gc) {
 }
 ```
 
+## Khác nhau giữa usedMemory, totalMemory và limitMemory (performance.memory)
+
+- **usedMemory** (usedJSHeapSize): Dung lượng heap JavaScript đang thực sự được dùng bởi các object/closure, tính tại thời điểm đo. Sau khi GC chạy có thể giảm. Đơn vị đang được đổi sang MB trong code.
+- **totalMemory** (totalJSHeapSize): Tổng dung lượng heap đã được V8 cấp phát cho tab ở thời điểm hiện tại (đang “giữ chỗ”). Thường ≥ usedMemory. Có thể tăng/giảm theo nhu cầu (heap grow/shrink).
+- **limitMemory** (jsHeapSizeLimit): Giới hạn tối đa mà heap JS có thể tăng tới cho tab (do engine đặt ra), không phải RAM máy. Khi tiến sát mức này dễ gặp GC mạnh hoặc lỗi OOM.
+
+Một số quan hệ hữu ích:
+- Luôn có: used ≤ total ≤ limit
+- total − used ≈ phần trống còn lại trong heap hiện tại
+- Khi used gần bằng total, V8 có thể mở rộng total (nếu total < limit). Nếu đã gần limit, khó mở rộng thêm → GC gắt hoặc OOM.
+- Lưu ý: performance.memory là API không tiêu chuẩn và chủ yếu khả dụng trên Chrome/Chromium.
+
+## Vì sao totalMemory do V8 cấp phát còn limit do engine đặt? Mục đích của mỗi cái là gì?
+
+### totalMemory (totalJSHeapSize) — V8 quản lý “kích thước heap hiện tại”
+
+Mục đích: Tối ưu hiệu năng cấp phát và GC.
+- Giữ sẵn một vùng heap đủ lớn để cấp phát object nhanh mà không phải xin OS liên tục.
+- Chủ động “grow/shrink” theo tải thực tế, cân bằng giữa tần suất GC và mức dùng RAM.
+- Kiểm soát bố cục vùng nhớ (new/old space, semi-space) để giảm phân mảnh và tối ưu thu gom rác.
+- Phạm vi quyết định: Nội bộ V8, miễn là chưa chạm “limit”.
+
+### limit (jsHeapSizeLimit) — Engine/Embedder (Chrome/Node…) đặt “trần heap”
+
+Mục đích: An toàn hệ thống và công bằng tài nguyên.
+- Ngăn 1 tab/quy trình chiếm hết bộ nhớ gây treo hệ thống hoặc OOM toàn cục.
+- Đặt ngân sách nhớ khác nhau theo thiết bị/kiến trúc (mobile thấp hơn desktop; 32-bit thấp hơn 64-bit).
+- Đảm bảo công bằng giữa nhiều tab/quy trình và dự đoán được hành vi.
+- Hạn chế tấn công DoS qua tiêu thụ bộ nhớ.
+- Phạm vi quyết định: Cấp embedding/engine, dựa trên cấu hình, kiến trúc, cờ khởi động.
+
+### Quan hệ và lý do tách vai trò
+- V8 cần quyền tự chủ để điều phối heap “bên trong” nhằm tối ưu hiệu năng (allocation/GC).
+- Engine/Embedder cần “hàng rào” bên “ngoài” để bảo vệ tổng thể hệ thống và phân bổ tài nguyên.
+
+> Kết quả: used ≤ total ≤ limit. V8 có thể tăng total khi cần, nhưng không vượt limit.
+
+* Lưu ý
+- limit không phải là RAM máy; là trần do engine đặt cho heap JS.
+- Giá trị phụ thuộc kiến trúc/cấu hình và có thể thay đổi theo phiên bản/cờ chạy.
+
 ## Kết luận
 
 Garbage Collection là một tính năng quan trọng của JavaScript, giúp lập trình viên không phải lo lắng về việc quản lý bộ nhớ thủ công. Tuy nhiên, hiểu cách GC hoạt động giúp bạn viết code hiệu quả hơn và tránh memory leaks.

@@ -145,3 +145,8 @@ Tạo ra một **đặc tả chung** cho JavaScript để:
 - Tăng sự tham gia từ cộng đồng phát triển
 
 > Quá trình này đã chuyển từ việc chuẩn hóa chậm chạp và không đều đặn sang một quy trình hiện đại, minh bạch và có sự tham gia rộng rãi của cộng đồng.
+
+
+Reference: 
+- History: <https://roadmap.sh/guides/history-of-javascript>
+- Versions: <https://www.educative.io/blog/javascript-versions-history>

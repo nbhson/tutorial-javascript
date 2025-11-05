@@ -157,6 +157,8 @@
             <button onclick="runDemo()">▶️ Chạy Demo</button>
             <button onclick="clearConsole()">🗑️ Xóa Console</button>
             <button onclick="forceGC()" id="gcBtn" disabled>🔄 Force GC</button>
+            <button onclick="profileAllocate50MB()">📈 Profile Memory (Allocate ~50MB)</button>
+            <button onclick="freeAllocations()">🧹 Free Allocation</button>
         </div>
         
         <div class="memory-info" id="memoryInfo" style="display: none;">
@@ -295,6 +297,63 @@
             } else {
                 console.log("❌ Force GC not available. Use --expose-gc flag in Node.js");
             }
+        }
+
+        // ==============================
+        // Memory profiling helpers
+        // ==============================
+        const _allocHolds = [];
+
+        function mb(bytes) {
+            return (bytes / 1024 / 1024).toFixed(2);
+        }
+
+        async function profileMemory(label, fn) {
+            if (!performance || !performance.memory) {
+                console.log("⚠️ performance.memory không khả dụng trên trình duyệt này.");
+                return;
+            }
+            const before = performance.memory.usedJSHeapSize;
+            console.log(`📷 Gợi ý: Mở DevTools → Memory, chụp snapshot TRƯỚC khi chạy: ${label}`);
+            await new Promise(r => setTimeout(r, 150));
+
+            try {
+                const result = fn();
+                if (result && typeof result.then === 'function') {
+                    await result;
+                }
+            } catch (e) {
+                console.log("❌ Lỗi khi thực thi tác vụ:", e);
+            }
+
+            // đợi một nhịp để cấp phát hoàn tất (không ép GC)
+            await new Promise(r => setTimeout(r, 200));
+            const after = performance.memory.usedJSHeapSize;
+            const delta = after - before;
+            console.log(`✅ ${label}: usedJSHeapSize thay đổi +${mb(delta)} MB (trước: ${mb(before)} MB → sau: ${mb(after)} MB)`);
+            console.log("📷 Gợi ý: Chụp snapshot SAU, so sánh theo Constructor/Dominator tree để tìm nguồn cấp phát.");
+            updateMemoryInfo();
+        }
+
+        function allocateApproxBytes(numBytes) {
+            // Tạo một mảng số (8 bytes/number xấp xỉ) để gần đúng kích thước
+            const count = Math.floor(numBytes / 8);
+            const arr = new Array(count);
+            for (let i = 0; i < count; i++) arr[i] = i;
+            _allocHolds.push(arr); // giữ tham chiếu để tránh GC ngay
+            return arr.length;
+        }
+
+        function freeAllocations() {
+            const total = _allocHolds.length;
+            _allocHolds.length = 0;
+            console.log(`🧹 Đã giải phóng tham chiếu tạm (${total} khối). Chờ GC để thu hồi thực sự.`);
+            updateMemoryInfo();
+        }
+
+        function profileAllocate50MB() {
+            const fiftyMB = 50 * 1024 * 1024;
+            profileMemory("Allocate ~50MB", () => allocateApproxBytes(fiftyMB));
         }
         
         // Auto-run demo when page loads
