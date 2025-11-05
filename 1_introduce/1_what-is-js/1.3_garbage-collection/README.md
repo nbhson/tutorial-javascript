@@ -254,6 +254,30 @@ Mục đích: An toàn hệ thống và công bằng tài nguyên.
 - limit không phải là RAM máy; là trần do engine đặt cho heap JS.
 - Giá trị phụ thuộc kiến trúc/cấu hình và có thể thay đổi theo phiên bản/cờ chạy.
 
+## Vì sao used/total/limit không giảm ngay:
+
+- usedJSHeapSize chỉ giảm sau khi GC thực sự chạy. Trình duyệt trì hoãn GC đến lúc “idle” để tránh giật lag; nếu tab rảnh và không có áp lực bộ nhớ, GC có thể chưa chạy.
+- totalJSHeapSize là dung lượng heap đã cấp phát. V8 thường giữ lại capacity để cấp phát nhanh về sau, nên ít khi thu nhỏ ngay cả khi used giảm.
+- jsHeapSizeLimit là ngưỡng cố định của engine, không đổi.
+
+*performance.memory là API không tiêu chuẩn, được lấy mẫu/cached; không phải mỗi “tick” đều cập nhật. Khi không có GC hay cấp phát lớn, số có thể đứng yên.*
+
+Vì sao “Take Heap Snapshot” thì mới thay đổi:
+> Trước khi chụp snapshot, DevTools thường kích hoạt một full GC hoặc ít nhất là làm “đo chính xác” heap, buộc V8 dọn rác/compact. Điều này làm usedJSHeapSize cập nhật thấy rõ.
+> vTools cũng làm tươi số liệu memory ngay lúc đó, trong khi polling bình thường của bạn có thể đang đọc giá trị cũ.
+
+
+## Vậy tại sao không gán lại null nhưng bộ nhớ vẫn được tự động thu hồi trong function  demoEphemeralAllocation
+
+> Vì không còn tham chiếu tới dữ liệu đó nữa. Trong `demoEphemeralAllocation`, mảng lớn nằm trong một block cục bộ ({ ... }) với biến const `localArr`. Không có tham chiếu nào “thoát ra” khỏi block **(không return, không gán vào biến toàn cục, không gắn vào DOM, không giữ trong closure đang sống lâu)**. Khi block kết thúc, `localArr` không còn reachable từ bất kỳ root nào (call stack, window, module, DOM…), nên theo thuật toán mark-and-sweep, object này bị đánh dấu “unreachable” và sẽ được GC thu hồi ở lần quét tiếp theo.
+
+- Bạn không cần gán = null vì “gán null” chỉ là một cách chủ động cắt tham chiếu. Ở đây, tham chiếu tự mất khi scope kết thúc. GC dựa vào reachability, không dựa vào giá trị null.
+Lưu ý khi quan sát:
+- usedJSHeapSize chỉ giảm sau khi GC thực sự chạy (có thể trễ vài giây, thường khi rảnh).
+- totalJSHeapSize có thể không giảm vì V8 giữ capacity.
+
+> Nếu mở DevTools/Take snapshot, trình duyệt thường kích hoạt GC, nên bạn thấy giảm rõ ngay.
+
 ## Kết luận
 
 Garbage Collection là một tính năng quan trọng của JavaScript, giúp lập trình viên không phải lo lắng về việc quản lý bộ nhớ thủ công. Tuy nhiên, hiểu cách GC hoạt động giúp bạn viết code hiệu quả hơn và tránh memory leaks.

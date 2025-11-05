@@ -111,8 +111,8 @@ console.log("4. Weak References Example:");
 
 // WeakMap example
 const weakMap = new WeakMap();
-const key1 = { id: 1 };
-const key2 = { id: 2 };
+let key1 = { id: 1 };
+let key2 = { id: 2 };
 
 weakMap.set(key1, "Data for key1");
 weakMap.set(key2, "Data for key2");

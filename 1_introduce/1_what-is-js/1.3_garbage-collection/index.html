@@ -159,6 +159,7 @@
             <button onclick="forceGC()" id="gcBtn" disabled>🔄 Force GC</button>
             <button onclick="profileAllocate50MB()">📈 Profile Memory (Allocate ~50MB)</button>
             <button onclick="freeAllocations()">🧹 Free Allocation</button>
+            <button onclick="demoEphemeralAllocation()">🧪 GC Demo (không gán null)</button>
         </div>
         
         <div class="memory-info" id="memoryInfo" style="display: none;">
@@ -354,6 +355,47 @@
         function profileAllocate50MB() {
             const fiftyMB = 50 * 1024 * 1024;
             profileMemory("Allocate ~50MB", () => allocateApproxBytes(fiftyMB));
+        }
+
+        // Demo: cấp phát tạm rồi để GC thu hồi, không gán null/clear
+        async function demoEphemeralAllocation() {
+            if (!performance || !performance.memory) {
+                console.log("⚠️ performance.memory không khả dụng trên trình duyệt này.");
+                return;
+            }
+            const readUsed = () => performance.memory.usedJSHeapSize;
+            const before = readUsed();
+            console.log(`🔎 Trước khi cấp phát: ${mb(before)} MB used`);
+
+            // Phạm vi khối: biến chỉ sống trong block này
+            {
+                const thirtyMB = 30 * 1024 * 1024;
+                const count = Math.floor(thirtyMB / 8);
+                
+                const localArr = new Array(count);
+                for (let i = 0; i < count; i++) localArr[i] = i;
+                // không lưu vào biến toàn cục, không gán null
+                console.log(`⚡ Đã cấp phát tạm ~30MB trong biến cục bộ (Array length ~${count}).`);
+                await new Promise(r => setTimeout(r, 150));
+                const during = readUsed();
+                console.log(`📈 Sau cấp phát: ${mb(during)} MB used (tăng ~${mb(during - before)} MB)`);
+            }
+
+            // localArr đã ra khỏi phạm vi → eligible for GC khi engine rảnh
+            console.log("⏳ Chờ GC thu hồi (không ép GC)...");
+            // kiểm tra lại sau một khoảng thời gian để quan sát xu hướng giảm
+            setTimeout(() => {
+                const after1 = readUsed();
+                console.log(`🧰 Kiểm tra 1 (2s): ${mb(after1)} MB used (Δ so với trước cấp phát: ${mb(after1 - before)} MB)`);
+                updateMemoryInfo();
+            }, 2000);
+
+            setTimeout(() => {
+                const after2 = readUsed();
+                console.log(`🧰 Kiểm tra 2 (5s): ${mb(after2)} MB used (Δ so với trước cấp phát: ${mb(after2 - before)} MB)`);
+                console.log("💡 Nếu số liệu giảm về gần mức ban đầu: GC đã thu hồi mảng tạm, dù bạn không gán null hay .length = 0.");
+                updateMemoryInfo();
+            }, 5000);
         }
         
         // Auto-run demo when page loads
