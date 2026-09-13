@@ -1,15 +1,17 @@
 # JavaScript Versions (ES5 → ESNext)
 
-> **Trạng thái:** 🚧 Chưa có nội dung — placeholder theo roadmap.sh
+## Timeline
+- **ES1 (1997)** — chuẩn đầu tiên
+- **ES3 (1999)** — regex, try/catch
+- **ES5 (2009)** — strict mode, JSON, Array methods
+- **ES2015/ES6** — let/const, class, arrow, promise, module, destructuring, spread
+- **ES2016** — `**`, `Array.includes`
+- **ES2017** — async/await, Object.values
+- **ESNext** — tên gọi cho phiên bản đang phát triển (TC39 4 stages)
 
-## Mục tiêu
-- Hiểu quá trình chuẩn hoá ECMAScript (TC39, 4 stages)
-- Phân biệt ES5, ES2015 (ES6), ES2016, ES2017… ESNext
-- Biết cách tra cứu compatibility (caniuse, kangax)
+## TC39 Process
+Proposal → Stage 0 → 1 → 2 → 3 → 4 → Spec
 
-## TODO
-- [ ] Tạo timeline ES5 → ES2026
-- [ ] Liệt kê breaking features từng phiên bản
-- [ ] Ví dụ transpile Babel cho ES6 → ES5
-
-Tham khảo: `00_introduction/02_history-of-javascript/README.md` đã có chi tiết ES1-ES8, cần tách phần Versions ra đây.
+## Check compatibility
+- kangax.github.io/compat-table
+- caniuse.com

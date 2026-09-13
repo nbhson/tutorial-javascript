@@ -1,8 +1,6 @@
 # Built-in Objects
 
-> 🚧 Placeholder — roadmap.sh: Built-in Objects (Object, Array, String, Number, Math, Date, RegExp, Error)
+- 01_math, 02_date, 03_regexp, 04_error — mỗi cái 1 demo `app.js`
+- Thêm: `Array`, `String`, `Number`, `Object`, `Map/Set` xem `03_data-structures`
 
-## TODO
-- [ ] Liệt kê các built-in objects chính
-- [ ] Ví dụ sử dụng mỗi loại
-- [ ] Phân biệt primitive wrapper vs primitive
+Tổng quan built-in: `Object`, `Function`, `Array`, `String`, `Number`, `Boolean`, `Date`, `RegExp`, `Error`, `Math`, `JSON`

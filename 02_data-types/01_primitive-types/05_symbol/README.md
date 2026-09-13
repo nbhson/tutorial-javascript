@@ -14,6 +14,6 @@ console.log(Object.getOwnPropertySymbols(obj));
 ## Built-in Symbols
 - `Symbol.iterator`, `Symbol.toStringTag`
 
-## TODO
+## Bài tập
 - [ ] Demo Symbol làm private field
 - [ ] Demo well-known Symbols

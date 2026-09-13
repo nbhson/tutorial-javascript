@@ -14,6 +14,6 @@ console.log(typeof big); // bigint
 - So sánh: `1n == 1` true (loose), `1n === 1` false
 - Dùng cho ID, timestamp nano, crypto
 
-## TODO
+## Bài tập
 - [ ] Demo tính toán lớn
 - [ ] So sánh `==` vs `===` với BigInt

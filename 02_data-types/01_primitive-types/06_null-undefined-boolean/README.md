@@ -12,6 +12,6 @@ console.log(null == undefined, null === undefined);
 console.log(Boolean(0), Boolean(""), Boolean([]));
 ```
 
-## TODO
+## Bài tập
 - [ ] Demo phân biệt null vs undefined
 - [ ] Demo Boolean coercion

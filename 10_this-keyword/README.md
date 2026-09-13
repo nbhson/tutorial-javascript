@@ -1,11 +1,2 @@
-# this — 5 contexts (roadmap.sh)
-
-| Context | this là gì |
-|---|---|
-| in a method | object gọi method |
-| in a function (strict / non-strict) | undefined / window |
-| using it alone | window (non-strict) |
-| in event handler | element |
-| in arrow function | lexical this |
-
-Xem `app.js` demo 5 trường hợp.
+# Using (this) keyword
+- 01_in-method, 02_in-function, 03_alone, 04_event-handler, 05_arrow, 06_arrow-lexical

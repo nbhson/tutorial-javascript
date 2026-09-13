@@ -1,8 +1,11 @@
 # Variable Naming Rules & Best Practices
 
-> Extract từ 01_variables/01_declarations/README.md (255 dòng) — phần naming & best practices nên tách ra đây
+## Rules
+- Bắt đầu bằng `a-z`, `_`, `$` — không số đầu
+- `camelCase` cho biến/hàm, `UPPER_SNAKE` cho hằng
+- Không trùng `reserved` (`let`, `class`, ...)
 
-## TODO
-- [ ] Quy tắc đặt tên (camelCase, UPPER_SNAKE)
-- [ ] Reserved keywords
-- [ ] Best practices: const-first, descriptive names
+## Best Practices
+- Dùng `const` trước, `let` khi cần gán lại, tránh `var`
+- Tên mô tả: `userCount` thay vì `x`
+- Xem `01_declarations/README.md` ví dụ.

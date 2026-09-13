@@ -1,0 +1,2 @@
+# Ternary
+Xem `app.js`
