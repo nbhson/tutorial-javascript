@@ -1,2 +1,2 @@
-# Misc Modern JS
-- 01_logical-or (??)
+# Misc — Logical Operators
+- 01_logical-or: && và || short-circuit behavior
