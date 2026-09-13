@@ -12,61 +12,79 @@ Spread `...` **mở rộng** iterable (array, string) hoặc enumerable properti
 | Destructuring | `[...rest]` | Collect remaining items |
 
 ## ✅ Điểm mạnh
-- Clone nông (shallow) array/object nhanh gọn
-- Merge/overwrite property dễ dàng
-- Spread array vào function args thay `apply`
-- Combine nhiều array/object thành 1
 
-## ⚠️ Lưu ý
-- **Shallow copy only**: nested object/array vẫn shared reference
-- Object spread **không merge đệ quy** — property sau ghi đè property trước
-- Spread string: `"abc"` → `["a", "b", "c"]`
-- Không spread Promise, Set (Set spread được), Map (cần ` [...map.entries()] `)
+| Ưu điểm | Ví dụ |
+|---|---|
+| Clone nông nhanh gọn | `const clone = [...original];` |
+| Merge/overwrite props | `{...defaults, ...override}` |
+| Spread vào function args | `Math.max(...nums)` |
+| Combine arrays ngắn | `[0, ...a, ...b, 5]` |
+
+## ⚠️ Bẫy thường gặp
+
+### Bẫy 1: Shallow copy only
+```js
+const original = [1, 2, [3, 4]];
+const clone = [...original];
+clone[2][0] = 99;
+console.log(original[2][0]); // 99 — nested vẫn shared!
+```
+
+### Bẫy 2: Object spread không merge đệ quy
+```js
+const a = { x: { a: 1 } };
+const b = { x: { b: 2 } };
+const merged = { ...a, ...b };
+// { x: { b: 2 } } — a.x bị ghi đè hoàn toàn, không merge
+```
+
+### Bẫy 3: Spread string thành chars
+```js
+[..."hello"]; // ['h','e','l','l','o']
+```
 
 ## 💡 Khi nào dùng
+
 - Immutable update (Redux pattern)
 - Merge config objects
 - Pass array elements làm function arguments
 - Concatenate arrays ngắn gọn
 
-## 🎯 Ví dụ minh họa
+## 🎯 Ví dụ
 
-### Clone array (shallow)
 ```js
+// Clone array (shallow)
 const original = [1, 2, [3, 4]];
 const clone = [...original];
 clone[0] = 99;
 console.log(original[0]); // 1 (không đổi)
-console.log(clone[2][0]); // 3 — nested vẫn shared!
-```
 
-### Merge object
-```js
+// Merge object
 const defaults = { theme: "light", lang: "vi" };
 const userPrefs = { theme: "dark" };
 const config = { ...defaults, ...userPrefs };
 // { theme: "dark", lang: "vi" }
-```
 
-### Spread vào function call
-```js
+// Spread vào function call
 const nums = [1, 2, 3];
 console.log(Math.max(...nums)); // 3
 console.log(Math.min(...nums)); // 1
 
 function add(a, b, c) { return a + b + c; }
 console.log(add(...nums)); // 6
-```
 
-### Combine arrays
-```js
+// Combine arrays
 const a = [1, 2];
 const b = [3, 4];
 const c = [0, ...a, ...b, 5];
 // [0, 1, 2, 3, 4, 5]
+
+// Redux-style immutable update
+const state = { items: [1, 2, 3], filter: "all" };
+const newState = { ...state, items: [...state.items, 4] };
+// state.items vẫn [1,2,3], newState.items = [1,2,3,4]
 ```
 
-## 📚 Tham khảo & Bài tập
-- File: `app.js`, `index.html` trong folder `02_spread/`
-- Thực hành: viết hàm `deepClone` dùng spread + recursion
-- Câu hỏi: spread array và `concat` khác nhau ở điểm nào?
+## 🔗 Liên kết chéo
+- Xem: `20_modern-javascript/02_destructuring-spread-rest/01_destructuring-rest`
+- Xem: `09_functions/01_parameters-and-arrow/06_function-parameters`

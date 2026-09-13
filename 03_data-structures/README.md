@@ -1,67 +1,200 @@
-# 03. Cấu trúc dữ liệu (Data Structures)
+# Data Structures — Cấu Trúc Dữ Liệu Trong JavaScript
 
-## 🔑 Khái niệm
+> **roadmap.sh:** Arrays, Keyed Collections (Map/WeakMap/Set/WeakSet), Typed Arrays, JSON
 
-Nhóm này trang bị các **cấu trúc dữ liệu có sẵn** của JavaScript — chia làm 3 loại theo cách tài liệu MDN/roadmap.sh mô tả:
+## 🔑 Khái niệm cốt lõi
 
-1. **Indexed Collections (truy cập theo chỉ số):** `Array` và `TypedArray`. Phần tử được truy cập bằng số index `0, 1, 2...`.
-2. **Keyed Collections (truy cập theo khóa):** `Map`, `Set`, `WeakMap`, `WeakSet`. Dữ liệu được lưu theo khóa không nhất thiết phải là số.
-3. **Structured Data (dữ liệu có cấu trúc):** `JSON` — định dạng chuẩn để trao đổi dữ liệu giữa client – server.
+JavaScript có 4 nhóm cấu trúc dữ liệu chính, mỗi nhóm giải quyết bài toán khác nhau:
 
-| Cấu trúc | Khóa | Thứ tự | Trùng | GC "mềm" |
-|---|---|---|---|---|
-| `Array` | index 0-based | có | được | không |
-| `Map` | bất kỳ (kể cả object) | có | không (ghi đè) | không |
-| `Set` | mỗi phần tử là "khóa" | có | tự loại trùng | không |
-| `WeakMap` | **chỉ object** | không | không | có |
-| `WeakSet` | **chỉ object** | không | không | có |
-| `TypedArray` | index, kiểu cố định | có | được | không |
+| Nhóm | Cấu trúc | Mục đích |
+|---|---|---|
+| **Array** | Array | Danh sách có thứ tự, truy cập index |
+| **Keyed Collection** | Map, Set, WeakMap, WeakSet | Key-value với any key type, unique values |
+| **Typed Array** | ArrayBuffer, Uint8Array, DataView | Binary data, xử lý byte-level |
+| **Structured Data** | JSON | Serialization/deserialization |
+
+### Array vs Map — Sự khác biệt quan trọng
+
+| Tiêu chí | Array | Map |
+|---|---|---|
+| Key type | Number (index) | Any (string, object, symbol) |
+| Order | Giữ thứ tự insertion | Giữ thứ tự insertion |
+| Size | .length (property) | .size (property) |
+| Iteration | for...of, forEach | for...of, forEach |
+| Performance lookup | O(1) by index | O(1) average by key |
+| Memory overhead | Thấp | Cao hơn (~2x) |
+
+## 📐 Khi nào dùng cấu trúc nào
+
+| Tình huống | Cấu trúc | Lý do |
+|---|---|---|
+| Danh sách có thứ tự, index truy cập | Array | Native, optimized |
+| Lookup theo key phức tạp (object) | Map | Any key type |
+| Unique values collection | Set | O(1) has(), auto-dedup |
+| Cache với object key, thin memory | WeakMap | GC-friendly |
+| Metadata attach to DOM nodes | WeakMap | Không leak memory |
+| Binary data (image, audio) | TypedArray | Efficient memory layout |
+| Exchange data giữa systems | JSON | Universal format |
 
 ## ✅ Điểm mạnh
 
-- Chọn đúng cấu trúc → code nhanh và sạch hơn nhiều.
-- `Map`/`Set` cho thao tác khóa/ngăn trùng rất gọn so với object thủ công.
-- `WeakMap`/`WeakSet` không chặn garbage collector → tránh rò rỉ bộ nhớ.
-- `TypedArray` cho thao tác dữ liệu nhị phân (file, audio, canvas, WebGL) hiệu quả.
-- `JSON` là "ngôn ngữ chung" của web: API, lưu trữ local, giao tiếp đều dùng.
+| Cấu trúc | Ưu điểm chính |
+|---|---|
+| Array | Fast index access, rich API (map/filter/reduce) |
+| Map | Any key type, preserves insertion order, O(1) get/set |
+| Set | Fast membership test, automatic deduplication |
+| WeakMap | Keys are weakly referenced — no memory leaks |
+| TypedArray | Binary data manipulation, WebGL, crypto |
+| JSON | Human-readable, universal, language-agnostic |
 
-## ⚠️ Lưu ý / Hạn chế
+## ⚠️ Bẫy thường gặp
 
-- `WeakMap`/`WeakSet` **chỉ nhận object** (primitive sẽ báo lỗi), **không có `size`**, **không lặp được**.
-- `Map` khóa object so sánh theo **tham chiếu**, không phải theo nội dung.
-- `JSON.stringify` bỏ qua `undefined`/`function`/`Symbol`, đổi `NaN` → `null`.
-- Array methods làm quen nhiều nhất là nhóm `forEach/map/filter/reduce` — học kỹ trong `01_arrays`.
+### Bẫy 1: Array không phải Map
+```js
+const arr = [];
+arr['name'] = 'test';  // thêm property, KHÔNG phải element
+arr.length;            // 0 — không tính property
+Array.isArray(arr);    // true — vẫn là array
+```
+
+### Bẫy 2: Map vs Object key type
+```js
+const obj = {};
+obj[1] = 'one';   // key là string "1"
+obj[true] = 'yes'; // key là string "true"
+// 1 === '1' → false, nhưng obj[1] === obj['1'] → true
+
+const map = new Map();
+map.set(1, 'one');
+map.set('1', 'string-one');
+map.get(1);      // 'one'
+map.get('1');    // 'string-one' ← phân biệt được!
+```
+
+### Bẫy 3: WeakMap key phải là object
+```js
+const wm = new WeakMap();
+wm.set('string', 'value'); // TypeError
+wm.set(123, 'value');      // TypeError
+wm.set(null, 'value');     // TypeError
+// ONLY objects: {}, [], class instances, functions
+```
+
+### Bẫy 4: JSON không serialize được
+```js
+JSON.stringify(new Date());      // "2024-01-01T00:00:00.000Z"
+JSON.stringify(/regex/);         // undefined (bỏ qua)
+JSON.stringify(() => {});        // undefined
+JSON.stringify(new Map());       // {} (mất data)
+JSON.stringify(new Set([1,2]));  // []
+```
 
 ## 💡 Khi nào dùng
 
-- Danh sách có thứ tự → `Array` (kèm `map/filter/reduce`).
-- Liên kết khóa–giá trị phức tạp (khóa không phải chuỗi) → `Map`.
-- Khi cần "unique", chống trùng → `Set`.
-- Cache metadata kèm object mà không muốn giữ object sống mãi → `WeakMap`.
-- Gửi/nhận dữ liệu với server, lưu `localStorage` → `JSON`.
+### Array — khi cần:
+- Danh sách có thứ tự, truy cập bằng index
+- Dữ liệu dạng list/table
+- Cần các methods: map, filter, reduce, sort
+
+### Map — khi cần:
+- Key là object/symbol (không phải string/number)
+- Cần preserve insertion order + frequent get/set
+- Counter/tally với object key
+- Memoization cache
+
+### Set — khi cần:
+- Loại bỏ duplicate values
+- Kiểm tra membership nhanh (O(1))
+- Intersection/union/difference giữa collections
+
+### WeakMap — khi cần:
+- Attach metadata vào object mà không gây memory leak
+- Private fields simulation
+- Cache với object key, cho phép GC thu hồi
+
+### TypedArray — khi cần:
+- Xử lý binary data (ảnh, audio, websockets)
+- Giao tiếp với WebGL/WebGPU
+- Cryptographic operations
+- Memory-efficient numeric arrays
+
+### JSON — khi cần:
+- Send/receive data qua network (API)
+- Store configuration
+- Log/debug data representation
+- Exchange giữa languages
 
 ## 🎯 Ví dụ minh họa
 
+### Array — basic operations
 ```js
-// Array
-const arr = [1, 2, 3];
-console.log(arr.map((n) => n * 2)); // [2, 4, 6]
-
-// Map — khóa là object được phép
-const m = new Map();
-m.set({ id: 1 }, "giá trị");
-console.log(m.size); // 1
-
-// Set — tự loại trùng
-const s = new Set([1, 2, 2, 3]);
-console.log([...s]); // [1, 2, 3]
-
-// JSON
-console.log(JSON.stringify({ a: 1 })); // {"a":1}
+const fruits = ['apple', 'banana', 'cherry'];
+fruits.push('date');           // thêm cuối
+fruits.unshift('apricot');     // thêm đầu
+fruits.splice(1, 1);           // xóa 'banana'
+const slice = fruits.slice(0, 2); // clone phần tử
+const found = fruits.indexOf('cherry'); // tìm index
 ```
 
-## 📚 Tham khảo / Bài tập
+### Map — với object keys
+```js
+const userScores = new Map();
+userScores.set({ id: 1, name: 'Alice' }, 95);
+userScores.set({ id: 2, name: 'Bob' }, 87);
 
-- Nhóm này gồm 4 bài con: `01_arrays/`, `02_keyed-collections/`, `03_typed-arrays/`, `04_json/`.
-- Mỗi bài đều có `app.js` hoặc `*.js` — chạy bằng `node <file>.js` (hoặc mở `index.html`).
-- Tự thử: lấy danh sách môn học có `{ name, page }`, dùng `filter` lọc page > 0, `map` đổi tên, `reduce` tính tổng page; sau đó chuyển qua `Map` lưu theo key `name`.
+const alice = { id: 1, name: 'Alice' };
+userScores.get(alice); // 95
+```
+
+### Set — deduplication
+```js
+const raw = [1, 2, 2, 3, 3, 3, 4];
+const unique = [...new Set(raw)]; // [1, 2, 3, 4]
+
+const a = new Set([1, 2, 3, 4]);
+const b = new Set([3, 4, 5, 6]);
+const intersect = new Set([...a].filter(x => b.has(x))); // {3, 4}
+```
+
+### TypedArray — binary ops
+```js
+const buf = new ArrayBuffer(16);
+const view = new DataView(buf);
+view.setInt32(0, 42, true);
+view.setFloat32(4, 3.14);
+console.log(view.getInt32(0)); // 42
+```
+
+### JSON — serialization
+```js
+const data = { name: 'A', scores: [90, 85, 92] };
+const json = JSON.stringify(data, null, 2);
+const parsed = JSON.parse(json);
+```
+
+## 🔬 Performance Comparison
+
+| Operation | Array | Map | Set | Object |
+|---|---|---|---|---|
+| Insert at end | O(1) | O(1) | O(1) | O(1) |
+| Lookup by index/key | O(1) | O(1) | O(1) | O(1) |
+| Lookup by value | O(n) | O(n)* | O(n) | O(n) |
+| Delete by key | O(n) | O(1) | O(1) | O(1) |
+| Memory overhead | Low | ~2x | ~1.5x | Low |
+
+*Map lookup O(1) average with hash table, worst case O(n) with collisions.
+
+## 📊 Best Practices
+
+1. **Default:** dùng Array cho danh sách có thứ tự
+2. **Object key:** dùng Map thay Object cho frequent get/set
+3. **Dedup:** dùng Set, không filter/splice thủ công
+4. **Private data:** dùng WeakMap, không property trực tiếp
+5. **Binary:** dùng TypedArray, không ArrayBuffer raw
+6. **API exchange:** JSON.stringify + JSON.parse, handle edges
+
+## 🔗 Liên kết chéo
+- Xem thêm: `03_data-structures/01_arrays` (Array chi tiết)
+- Xem thêm: `03_data-structures/02_keyed-collections` (Map/Set/WeakMap/WeakSet)
+- Xem thêm: `03_data-structures/03_typed-arrays` (Binary data)
+- Xem thêm: `03_data-structures/04_json` (Serialization)

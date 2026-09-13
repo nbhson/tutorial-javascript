@@ -1,8 +1,8 @@
 # 2D Animation
 
-## 🔑 Khái niệm
+## Khái niệm
 
-**2D animation** trong browser dùng `requestAnimationFrame` (rAF) — callback được gọi trước mỗi frame repaint (~60fps). Khác với `setInterval` vì rAF sync với browser refresh rate, pause khi tab inactive, tiết kiệm pin.
+**2D animation** trong browser dùng `requestAnimationFrame` (rAF) -- callback được gọi trước mỗi frame repaint (~60fps). Khác với `setInterval` vì rAF sync với browser refresh rate, pause khi tab inactive, tiết kiệm pin.
 
 ```js
 let lastTime = 0;
@@ -15,67 +15,93 @@ function animate(timestamp) {
 requestAnimationFrame(animate);
 ```
 
-## ✅ Điểm mạnh
-- Sync với monitor refresh → mượt, không giật
-- Tự pause khi tab ẩn → tiết kiệm CPU/pin
+### Delta time là gì?
+
+Delta time = thời gian giữa 2 frames (giây). Dùng để tính position độc lập với fps:
+- 60fps: delta ≈ 0.016s
+- 30fps: delta ≈ 0.033s
+- Cùng tốc độ vật lý, khác fps --> delta time đảm bảo animation mượt như nhau
+
+## Điểm mạnh
+
+- Sync với monitor refresh --> mượt, không giật, không waste frames
+- Tự pause khi tab inactive --> tiết kiệm CPU/pin đáng kể
 - Delta time đảm bảo tốc độ animation đồng nhất mọi frame rate
+- Callback nhận timestamp chính xác (DOMHighResTimeStamp)
+- Có thể cancel bằng `cancelAnimationFrame(id)`
 
-## ⚠️ Lưu ý
-- Không dùng `setInterval` cho animation — không sync với refresh rate
-- `requestAnimationFrame` callback nhận `DOMHighResTimeStamp` (ms)
-- Animation loop phải `cancelAnimationFrame(id)` khi không cần (cleanup)
-- rAF callback chạy trên main thread — heavy computation blocks UI
+## Lưu ý
 
-## 💡 Khi nào dùng
-- Game 2D đơn giản
-- Particle system, firework
-- Data visualization động (bar chart animate)
-- UI micro-interaction
+- Không dùng `setInterval` cho animation -- không sync với refresh rate, có thể miss frames
+- rAF callback nhận `DOMHighResTimeStamp` (ms since navigationStart) -- KHÔNG phải Date.now()
+- Animation loop phải `cancelAnimationFrame(id)` khi component unmount (cleanup)
+- rAF chạy trên main thread -- heavy computation blocks UI rendering
+- Một số browser throttle rAF xuống 1fps khi tab ẩn (tiết kiệm pin)
 
-## 🎯 Ví dụ minh họa
+## Khi nào dùng
 
-### Ball bounce animation
+- Game 2D đơn giản (platformer, pong, snake)
+- Particle system, firework, rain effects
+- Data visualization động (bar chart animate, line chart scroll)
+- UI micro-interaction (hover effects, loading spinner)
+- Scroll-triggered animations
+
+## Ví dụ: Bouncing Ball
+
 ```js
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 let x = 50, y = 50, vx = 3, vy = 3;
-const gravity = 0.3;
+const gravity = 0.5;
 const bounce = 0.8;
+const radius = 20;
 
 function loop() {
   vy += gravity;
   x += vx;
   y += vy;
-  
-  if (y > canvas.height - 20) { y = canvas.height - 20; vy *= -bounce; }
-  if (x > canvas.width - 20 || x < 20) { vx *= -1; }
-  
+
+  // Floor collision
+  if (y > canvas.height - radius) {
+    y = canvas.height - radius;
+    vy *= -bounce;
+  }
+  // Wall collision
+  if (x > canvas.width - radius || x < radius) {
+    vx *= -1;
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.beginPath();
-  ctx.arc(x, y, 20, 0, Math.PI * 2);
+  ctx.arc(x, y, radius, 0, Math.PI * 2);
   ctx.fillStyle = "coral";
   ctx.fill();
-  
+  ctx.strokeStyle = "#333";
+  ctx.stroke();
+
   requestAnimationFrame(loop);
 }
 loop();
 ```
 
-### Delta time smooth movement
+## Ví dụ: Delta Time Movement
+
 ```js
-let pos = 0;
-const speed = 100; // px per second
+let x = 0;
+const speed = 200; // pixels per second
 
 function move(timestamp, lastTime) {
-  const delta = (timestamp - lastTime) / 1000;
-  pos += speed * delta;
-  if (pos > canvas.width) pos = 0;
+  const delta = (timestamp - lastTime) / 1000; // seconds
+  x += speed * delta; // pixels moved this frame
+  if (x > canvas.width) x = 0;
   // draw...
   requestAnimationFrame(move);
 }
+requestAnimationFrame((ts) => move(ts, ts));
 ```
 
-## 📚 Tham khảo & Bài tập
-- File: `app.js`, `index.html`, `style.css` trong folder `02_2d-animation/`
-- Thực hành: tạo animation bouncing ball có gravity
-- Câu hỏi: tại sao dùng delta time thay vì fixed step?
+## Tham khảo
+
+- File: `app.js`, `index.html`, `style.css`
+- MDN rAF: https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+- Game loop pattern: https://gamedev.net/forums/topic/535875-basic-game-loop/

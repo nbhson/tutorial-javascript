@@ -1,58 +1,74 @@
 # Nullish Coalescing (??)
 
-## 🔑 Khái niệm
+## Khái niệm
 
-`a ?? b` trả về `b` **chỉ khi** `a` là `null` hoặc `undefined`. Khác với `||` — `||` trả `b` khi `a` là **bất kỳ falsy value** nào (`0`, `""`, `false`, `NaN`).
+`a ?? b` trả về `b` **chỉ khi** `a` là `null` hoặc `undefined`. Khác với `||` -- `||` trả `b` khi `a` là **bất kỳ falsy value** nào (`0`, `""`, `false`, `NaN`).
 
 ```js
-0 ?? 10   // 0  (giữ nguyên vì 0 không phải null/undefined)
-"" ?? "default"  // ""
-false ?? true   // false
-null ?? "fallback"  // "fallback"
-undefined ?? "fallback"  // "fallback"
+0 ?? 10            // 0  (giữ nguyên vì 0 không phải null/undefined)
+"" ?? "default"    // ""
+false ?? true      // false
+null ?? "fallback" // "fallback"
+undefined ?? "fallback" // "fallback"
 ```
 
-## ✅ Điểm mạnh
+## Điểm mạnh
+
 - Phân biệt đúng `null`/`undefined` vs giá trị hợp lệ (0, "", false)
 - Mặc định value an toàn cho form input, config
 - Thay thế pattern `var = var || default` gây bug
 
-## ⚠️ Lưu ý
-- **Không** dùng `??` thay `||` cho mọi trường hợp — chọn đúng ngữ cảnh
-- Operator precedence: `??` thấp hơn `&&`/`||` → cần dấu ngoặc nếu trộn
-- `??` không short-circuit kiểu `&&` — vế phải vẫn evaluate
+## Bẫy thường gặp
 
-## 💡 Khi nào dùng
+### Bẫy 1: Precedence thấp hơn && / ||
+```js
+const result = a && b ?? c;
+// JavaScript parse là: a && (b ?? c) -- KHÔNG phải (a && b) ?? c
+// Cần dấu ngoặc nếu muốn group khác
+const result = (a && b) ?? c;
+```
+
+### Bẫy 2: Không thay thế || cho mọi trường hợp
+```js
+// Nếu muốn bỏ TẤT CẢ falsy (包括 0, "", false) --> dùng ||
+const input = "" || "default"; // "default" <-- có thể đúng hoặc sai tùy ngữ cảnh
+const input = "" ?? "default"; // "" <-- giữ empty string hợp lệ
+```
+
+## Khi nào dùng
+
 - Default config value cho số (0 là hợp lệ)
 - Form input default text
 - API response fallback
+- Kết hợp với optional chaining: `user?.name ?? "Guest"`
 
-## 🎯 Ví dụ minh họa
+## Ví dụ
 
-### So sánh ?? vs ||
 ```js
+// So sánh ?? vs ||
 const count = 0;
-console.log(count || 10);   // 10  ← Sai! 0 là hợp lệ
-console.log(count ?? 10);   // 0   ← Đúng! giữ nguyên 0
+console.log(count || 10);   // 10  <-- Sai! 0 là hợp lệ
+console.log(count ?? 10);   // 0   <-- Đúng! giữ nguyên 0
 
 const name = "";
 console.log(name || "Guest");  // "Guest"
 console.log(name ?? "Guest");  // ""  (empty string là hợp lệ)
-```
 
-### Form input default
-```js
+// Form input default
 const age = parseInt(input.value) ?? 0;
 const limit = config.limit ?? 100; // giữ 0 nếu config.limit = 0
-```
 
-### Kết hợp với optional chaining
-```js
+// Kết hợp với optional chaining
 const city = user?.address?.city ?? "Chưa cập nhật";
 const theme = settings?.ui?.theme ?? "light";
+
+//实际应用: API response handling
+const response = await fetch("/api/user");
+const data = await response.json();
+const displayName = data?.user?.display_name ?? data?.user?.name ?? "Anonymous";
 ```
 
-## 📚 Tham khảo & Bài tập
-- File: `app.js`, `index.html` trong folder `02_nullish-coalescing/`
-- Thực hành: viết function `resolveDefault(value, fallback)` dùng `??`
-- Câu hỏi: `a || b || c` vs `a ?? b ?? c` khác nhau như thế nào?
+## Liên kết chéo
+
+- Xem: `20_modern-javascript/03_optional-chaining-nullish/01_optional-chaining`
+- Xem: `20_modern-javascript/05_misc/01_logical-or` (|| vs &&)

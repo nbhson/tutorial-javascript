@@ -1,96 +1,239 @@
-# Hoisting
+# Hoisting — [Level: Beginner]
 
-## 🔑 Khái niệm
+## 🔑 Khái niệm cốt lõi
 
-**Hoisting** (nâng lên) là hành vi của JavaScript engine: khi phân tích một phạm vi, nó "kéo" (hoist) các **khai báo** — biến `var`, `let`, `const` và **function declaration** — lên **đầu phạm vi** trước khi thực thi. Tuy nhiên, cách "kéo" của từng loại rất khác nhau:
+**Hoisting** (nâng lên) là hành vi của JavaScript engine: khi phân tích một phạm vi (scope), nó **"kéo" các khai báo** — biến `var`, `let`, `const` và **function declaration** — lên **đầu phạm vi** trước khi thực thi bất kỳ dòng code nào. Tuy nhiên, cách "kéo" của từng loại rất khác nhau, và đây là nguồn gốc của nhiều bug khó hiểu.
 
-**1. Hoisting với `var`** — khai báo được kéo lên, nhưng **không kéo giá trị khởi tạo**. Vì vậy biến tồn tại với giá trị mặc định `undefined` từ đầu:
+### Cơ chế hoạt động trong JavaScript engine
+
+Khi engine gặp một scope (global script, function body, hoặc block `{}`), nó thực hiện **hai bước**:
+
+1. **Creation phase**: quét toàn bộ scope, tạo các binding (biến/function) và khởi tạo chúng.
+2. **Execution phase**: thực thi từng dòng code theo thứ tự.
+
+Trong creation phase:
+- `var` → binding được tạo, khởi tạo thành `undefined`.
+- `let`/`const` → binding được tạo, nhưng **không khởi tạo** — nằm trong **TDZ (Temporal Dead Zone)** cho đến dòng khai báo.
+- `function declaration` → binding được tạo và khởi tạo với **full function body** (hoisted trọn vẹn).
+- `class declaration` → binding được tạo nhưng không khởi tạo (giống `let`/`const`, có TDZ).
+
+### 4 loại hoisting khác nhau
+
+#### 1. Hoisting với `var` — khai báo kéo lên, giá trị `undefined`
 
 ```js
-console.log(age); // undefined — khai báo `var age` đã được hoist lên trên
-var age = 16;
+console.log(age);      // undefined — khai báo `var age` đã được hoist lên trên
+var age = 16;          // initialization (gán giá trị) xảy ra tại dòng này
+// Quy trình thực tế:
+// var age;             ← creation phase: age = undefined
+// console.log(age);    ← execution phase: in undefined
+// age = 16;            ← execution phase: gán 16
 ```
 
-**2. Hoisting với `let`/`const`** — khai báo cũng được hoist, **nhưng không** được gán mặc định `undefined` như `var`. Từ đầu phạm vi cho đến dòng khai báo là vùng **Temporal Dead Zone (TDZ)** — truy cập tại đây sẽ ném `ReferenceError`:
+#### 2. Hoisting với `let`/`const` — có TDZ, truy cập trước gây ReferenceError
 
 ```js
 console.log(fullName);
-// ReferenceError: Cannot access 'fullName' before initialization
+// ❌ ReferenceError: Cannot access 'fullName' before initialization
 let fullName = "Sơn Nguyễn";
+// Quy trình thực tế:
+// let fullName;        ← creation phase: binding tồn tại nhưng trong TDZ
+// console.log(fullName); ← execution phase: TDZ → ReferenceError
+// fullName = "Sơn Nguyễn"; ← initialization (gán giá trị)
 ```
 
-TDZ là "vùng chết tạm thời": biến *đã tồn tại* trong phạm vi nhưng chưa thể dùng. Nhờ vậy, `let`/`const` giúp tránh lỗi logic khi vô tình dùng biến trước khi khai báo — đúng như ví dụ trong `app.js`: một `let x` trong block bên trong **ngăn** việc vô tình truy cập `x` của block bên ngoài (shadowing + TDZ).
+**TDZ (Temporal Dead Zone)**: "vùng chết tạm thời" — biến *đã tồn tại* trong phạm vi nhưng **chưa thể dùng** cho đến khi dòng khai báo được thực thi. Nhờ vậy, `let`/`const` giúp tránh lỗi logic khi vô tình dùng biến trước khi khai báo — thay vì in `undefined` im lặng, engine ném `ReferenceError` ngay.
 
-**3. Hoisting với function declaration** — hàm được khai báo bằng từ khóa `function` được kéo lên **hoàn chỉnh** (cả phần thân), nên gọi trước khi định nghĩa vẫn chạy được:
+#### 3. Hoisting với function declaration — kéo lên TRọn vẹn
 
 ```js
-console.log(sum(6, 9)); // 15
+console.log(sum(6, 9));  // 15 — hàm được hoist trọn vẹn
 function sum(a, b) {
   return a + b;
 }
+// Quy trình thực tế:
+// function sum(a, b) { ... }  ← creation phase: hàm sẵn sàng dùng
+// console.log(sum(6, 9));     ← execution phase: gọi được ngay
 ```
 
-**4. Hoisting bên trong closure** — function declaration nằm trong thân hàm khác (closure) vẫn được hoist trong phạm vi của hàm đó, nên gọi *ngược* cũng OK:
+> ⚠️ **Arrow function và function expression KHÔNG được hoist** — chúng là biến, nên rơi vào TDZ như `let`/`const`:
+
+```js
+console.log(gapBa(4));  // ❌ ReferenceError: Cannot access 'gapBa' before initialization
+const gapBa = (n) => n * 3;
+```
+
+#### 4. Hoisting trong closure — function declaration внутри hàm khác vẫn được hoist
 
 ```js
 function makeCounter() {
   let counter = 0;
-  return increase; // trả về tham chiếu dù increase định nghĩa phía dưới
+  return increase;  // ✅ trả về tham chiếu dù increase định nghĩa phía dưới
+  // increase được hoist trong phạm vi makeCounter
   function increase() {
     return ++counter;
   }
 }
 const c = makeCounter();
-console.log(c()); // 1
-console.log(c()); // 2
+console.log(c());  // 1
+console.log(c());  // 2
 ```
 
-> Lưu ý: hoisting chỉ áp dụng cho khai báo **`function sum() {}`**, không áp dụng cho **arrow function** `const sum = () => {}` — arrow là biến, nên rơi vào TDZ như `let`/`const`.
+## 📐 Cấu trúc nhóm
 
-## ✅ Điểm mạnh
+```
+01_variables/02_hoisting/
+├── README.md         ← bài này
+└── app.js            ← demo hoisting thực tế
+    └── index.html
+```
 
-- Function declaration có thể gọi trước khi định nghĩa → code có thể sắp xếp "ý nghĩa" trước, chi tiết sau.
-- TDZ của `let`/`const` bắt lỗi "dùng biến trước khi khai báo" ngay khi chạy.
-- Hiểu hoisting → đọc được những đoạn code cũ viết bằng `var` mà không bị lừa.
-- Closures mô tả quan hệ hàm-lồng-hàm tự nhiên nhờ hoisting của function declaration.
+## ✅ Điểm mạnh — Tại sao nên hiểu hoisting
 
-## ⚠️ Lưu ý / Hạn chế
+| # | Điểm mạnh | Lý do |
+|---|-----------|-------|
+| 1 | **Function declaration gọi trước định nghĩa** | Code có thể sắp xếp "ý nghĩa" trước, chi tiết sau — tổ chức file tự nhiên hơn |
+| 2 | **TDZ bắt lỗi sớm** | `let`/`const` dùng trước khai báo → `ReferenceError` thay vì `undefined` im lặng |
+| 3 | **Đọc được code cũ viết bằng `var`** | Biết `var` hoisted về undefined → không bị lừa bởi `console.log(x)` in `undefined` |
+| 4 | **Closure hoạt động đúng cách** | Function declaration trong closure được hoist đúng scope — hiểu được behavior này |
+| 5 | **Debug lỗi "undefined is not a function"** | Recognize pattern: function expression dùng trước khi khai báo |
 
-- `var` bị hoist thành `undefined` → kiểm tra `console.log(age)` in `undefined` **không báo lỗi**, rất dễ gây nhầm lẫn (lỗi logic).
-- `let`/`const` bị hoist nhưng nằm trong TDZ → nếu bạn nghĩ "hoisting = dùng trước được" là sai với chúng.
-- Arrow function / function expression **không** được hoist → gọi trước sẽ `ReferenceError`.
-- Đừng chủ ý dựa vào hoisting của `var` để viết code; hãy khai báo trước khi dùng.
+## ⚠️ Bẫy thường gặp & Hạn chế
 
-## 💡 Khi nào dùng
+| # | Bẩy | Ví dụ code | Cách tránh |
+|---|-----|-----------|-----------|
+| 1 | **`var` hoisted về undefined — không báo lỗi** | `console.log(age); var age = 16;` → in `undefined` | Dùng `let`/`const` — TDZ sẽ báo lỗi ngay |
+| 2 | **Arrow function không hoisted** | `const fn = () => {}; fn();` trước khai báo → ReferenceError | Viết function declaration hoặc đặt khai báo trước gọi |
+| 3 | **Class declaration có TDZ** | `new Person(); class Person {}` → ReferenceError | Đặt class trước khi dùng hoặc dùng function declaration pattern |
+| 4 | **Function expression vs declaration confusion** | `var fn = function(){};` (expression) không hoisted | Phân biệt `function fn(){} ` (declaration) vs `var fn = function(){}` (expression) |
+| 5 | **IIFE lợi dụng hoisting** | `(function(){...})()` chạy ngay — hiểu scope để tránh leak | Dùng `let`/`const` trong IIFE, không `var` |
 
-- Tổ chức file có mục: hàm "tiện ích" đặt dưới, logic chính gọi ở trên (function declaration).
-- Debug lỗi `Cannot access 'fullName' before initialization` → nhận ra dấu hiệu TDZ.
-- Nhận diện code cũ: thấy `console.log(x)` in `undefined` mà không lỗi → xem có phải `var`.
+## 💡 Khi nào dùng — Tình huống thực tế
 
-## 🎯 Ví dụ minh họa
+1. **Tổ chức file có mục** — hàm "tiện ích" đặt dưới, logic chính gọi ở trên (function declaration hoist giúp được).
+2. **Debug lỗi `Cannot access 'fullName' before initialization`** — nhận ra dấu hiệu TDZ, nguyên nhân do dùng `let`/`const` trước khai báo.
+3. **Nhận diện code cũ** — thấy `console.log(x)` in `undefined` mà không lỗi → xem có phải `var` không.
+4. **Viết recursive function** — function declaration hoist cho phép gọi tên hàm bên trong thân hàm (cần `function` keyword).
+5. **Setup test fixtures** — các helper function declaration được hoist, test code gọn hơn.
+
+## 🎯 Ví dụ minh họa — Từ cơ bản đến nâng cao
+
+### Ví dụ 1: var vs let hoisting difference
 
 ```js
-// var: hoisted về undefined
-console.log(str); // undefined
+// var: hoisted về undefined — KHÔNG lỗi
+console.log(str);    // undefined
 var str = "Hoisting";
 
-// let: TDZ → ReferenceError
-// console.log(x); // ReferenceError
+// let: hoisted nhưng trong TDZ — ReferenceError
+// console.log(x);   // ❌ ReferenceError
 let x = 10;
+```
 
-// Function declaration: hoist trọn vẹn
-console.log(gapDoi(4)); // 8
+### Ví dụ 2: Function declaration vs function expression hoisting
+
+```js
+// Function declaration: hoisted trọn vẹn — gọi trước được
+console.log(gapDoi(4));   // 8
 function gapDoi(n) {
   return n * 2;
 }
 
-// Function expression (arrow): KHÔNG hoist
-// console.log(gapBa(4)); // ReferenceError
+// Function expression (arrow): KHÔNG hoisted — gọi trước lỗi
+// console.log(gapBa(4)); // ❌ ReferenceError
 const gapBa = (n) => n * 3;
+console.log(gapBa(4));    // 12 — gọi sau khi khai báo
 ```
 
-## 📚 Tham khảo / Bài tập
+### Ví dụ 3: TDZ trong block scope
 
-- Chạy `app.js` trong thư mục (mở `index.html` → Console, hoặc `node app.js`): dòng `console.log(x)` trong block `let x = "xxx"` chứng minh rằng **khai báo `let x` bên trong block vẫn được hoist**, nên không tìm ra ngoài, gây `ReferenceError`; còn `console.log(y)` trước `const y = 10` cũng báo lỗi TDZ. Tắt `index.html` mở bằng trình duyệt rồi xem từng dòng lỗi đỏ.
-- Tự thử: 1) chép nhóm dòng `console.log(gapDoi(4))`/`function gapDoi` đổi thành arrow và đọc lỗi; 2) viết ví dụ riêng dùng `function` gọi trước định nghĩa và xác nhận nó chạy được.
-- Tài liệu: [MDN — Hoisting](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting), [javascript.info/var](https://javascript.info/var).
+```js
+{
+  console.log(x);       // ❌ ReferenceError — TDZ
+  let x = "xxx";        // khai báo trong block
+}
+// console.log(x);      // ❌ ReferenceError — x không tồn tại ngoài block
+
+// So sánh var trong cùng block:
+{
+  console.log(y);       // undefined — var hoisted về undefined
+  var y = 10;
+}
+console.log(y);          // 10 — var thoát khỏi block!
+```
+
+### Ví dụ 4: Closure + hoisting
+
+```js
+function createGreeter(greeting) {
+  // greeting được capture trong closure
+  return function (name) {
+    return `${greeting}, ${name}!`;
+  };
+}
+
+const sayHi = createGreeter("Xin chào");
+console.log(sayHi("Nam"));  // "Xin chào, Nam!"
+console.log(sayHi("Hoa"));  // "Xin chào, Hoa!"
+// greeting vẫn tồn tại trong closure scope — không bị GC thu hồi
+```
+
+### Ví dụ 5: Class TDZ — class cũng có TDZ như let/const
+
+```js
+// new Student();        // ❌ ReferenceError — class có TDZ
+// class Student {}      // sai thứ tự
+
+class Student {
+  constructor(name) {
+    this.name = name;
+  }
+  introduce() {
+    return `Tôi là ${this.name}`;
+  }
+}
+
+const sv = new Student("Lan");
+console.log(sv.introduce());  // "Tôi là Lan"
+// Đặt class trước khi dùng — tránh TDZ
+```
+
+### Ví dụ 6: Thực nghiệm hoisting trong devtools
+
+```js
+// Chạy từng dòng trong Console và quan sát:
+console.log(typeof foo);   // "function" — function declaration hoisted
+function foo() { return 1; }
+
+console.log(typeof bar);   // "undefined" — var hoisted về undefined
+var bar = 2;
+
+console.log(typeof baz);   // ❌ ReferenceError — const/let có TDZ
+const baz = 3;
+```
+
+## 🔬 So sánh với alternatives
+
+| Phương án | Ưu điểm | Nhược điểm |
+|-----------|---------|------------|
+| **Function declaration (hoisted)** | Gọi trước khi định nghĩa — code tổ chức tự nhiên | Chỉ hoạt động với `function` keyword, không với arrow |
+| **Arrow function (không hoisted)** | Cú pháp gọn, `this` lexical | Phải khai báo trước khi dùng — TDZ |
+| **Function expression (var)** | Gán động, flexible | Không hoisted — gọi trước sẽ lỗi |
+| **ES module top-level** | Import hoisted tự động | Requires module system setup |
+
+## 📊 Performance & Best Practices
+
+- **Ưu tiên khai báo trước khi dùng** — dù `var` hoisted, viết code theo thứ tự tự nhiên giúp đọc dễ hơn.
+- **Dùng function declaration cho helper functions** — tận dụng hoist, gọi trước khi định nghĩa.
+- **Arrow function nên đặt trước khi gọi** — tránh TDZ confusion.
+- **Class declaration nên đặt trước khi instantiate** — class có TDZ như `let`.
+- **ESLint `no-use-before-define`** — enforce rule khai báo trước sử dụng, giảm hoisting bug.
+- **Không dựa vào hoisting của `var`** — code rely hoisting khó đọc, dễ gây hiểu lầm.
+
+## 🔗 Liên kết chéo
+
+- Xem thêm: `01_variables/01_declarations/` — var vs let vs const so sánh
+- Xem thêm: `01_variables/01_declarations/01_let-and-const/` — TDZ chi tiết
+- Xem thêm: `01_variables/03_scopes/` — scope chain và hoisting context
+- Xem thêm: `09_functions/02_scope-closure-strict-mode/03_closure/` — closure và hoisting trong function scope
+- Tài liệu: [MDN — Hoisting](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting), [javascript.info/var](https://javascript.info/var), [javascript.info/let-const](https://javascript.info/let-const)

@@ -20,27 +20,49 @@ sum(1, 2, 3); // 6
 ```
 
 ## ✅ Điểm mạnh
-- Gán nhiều biến 1 dòng, rõ ràng
-- Swap biến `[a, b] = [b, a]`
-- Extract nested deeply: `const { user: { name } } = data`
-- Default values: `const { role = "user" } = data`
 
-## ⚠️ Lưu ý
-- **Destructuring không gán lại** — tạo biến mới (trừ khi dùng `obj.prop = val`)
-- `...rest` chỉ được **cuối cùng** trong destructuring
-- Object destructuring với key trùng tên variable: `const { name } = obj` ↔ `const { name: name } = obj`
-- Array destructuring bỏ qua phần tử không match (dùng `,` placeholder)
+| Ưu điểm | Ví dụ |
+|---|---|
+| Gán nhiều biến 1 dòng | `const [x, y] = point;` |
+| Swap biến | `[a, b] = [b, a];` |
+| Nested extraction | `const { profile: { bio } } = data;` |
+| Default values | `const { role = "user" } = data;` |
+| Skip elements | `const [first, , third] = arr;` |
+
+## ⚠️ Bẫy thường gặp
+
+### Bẫy 1: Statement context cần parens
+```js
+const { a } = obj;        // OK
+{ a } = obj;              // SyntaxError!
+({ a } = obj);            // OK — wrap in parens
+```
+
+### Bấu 2: Rest phải cuối cùng
+```js
+const [first, ...rest, last] = arr;  // SyntaxError! rest phải cuối
+const { a, ...rest, b } = obj;       // SyntaxError! rest phải cuối
+```
+
+### Bẫy 3: Undefined vs missing
+```js
+const { x = 10 } = {};     // x = 10 (missing → default)
+const { x = 10 } = { x: undefined }; // x = 10 (undefined → default)
+const { x = 10 } = { x: null };      // x = null (null ≠ undefined, KHÔNG dùng default)
+```
 
 ## 💡 Khi nào dùng
+
 - React props extraction: `const { title, body } = props`
 - API response handling: `const { data, meta } = response`
 - Function param grouping
 - Swap, rotate array elements
+- Extract nested config
 
-## 🎯 Ví dụ minh họa
+## 🎯 Ví dụ
 
-### Array destructuring
 ```js
+// Array destructuring
 const point = [10, 20];
 const [x, y] = point;
 console.log(x, y); // 10 20
@@ -51,39 +73,30 @@ console.log(first, third); // 1 3
 
 // Default values
 const [a = 10, b = 20] = [null, null];
-console.log(a, b); // 10 20
-```
+console.log(a, b); // 10 20 (null triggers default)
 
-### Object destructuring
-```js
+// Object destructuring
 const user = { id: 1, name: "A", profile: { bio: "Dev" } };
 const { name, profile: { bio } } = user;
 console.log(name, bio); // A Dev
 
-// Rename
+// Rename + default
 const { name: userName, age: userAge = 0 } = user;
 
-// Default + rest
+// Rest
 const { role = "guest", ...rest } = user;
-```
+// role="guest", rest={id:1, name:"A", profile:{...}}
 
-### Function parameters
-```js
+// Function parameters
 function greet({ name, age = 0 } = {}) {
   return `Hello ${name}, age ${age}`;
 }
 greet({ name: "A" }); // "Hello A, age 0"
+
+// Swap
+[a, b] = [b, a];
 ```
 
-### Rest parameters
-```js
-function multiply(factor, ...numbers) {
-  return numbers.map(n => n * factor);
-}
-multiply(2, 1, 2, 3); // [2, 4, 6]
-```
-
-## 📚 Tham khảo & Bài tập
-- File: `app.js`, `index.html` trong folder `01_destructuring-rest/`
-- Thực hành: destructuring nested API response
-- Câu hỏi: `const { a, a } = obj` có được không? (trả về lỗi SyntaxError)
+## 🔗 Liên kết chéo
+- Xem: `20_modern-javascript/02_destructuring-spread-rest/02_spread`
+- Xem: `03_data-structures/01_arrays`

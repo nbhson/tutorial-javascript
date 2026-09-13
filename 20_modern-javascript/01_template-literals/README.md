@@ -1,3 +1,6 @@
 # Template Literals
-- 01_template-string: multi-line, interpolation `${expr}`
-- 02_tagged-templates: custom template function
+
+> Backtick strings với interpolation `${expr}` và tagged templates.
+
+- `01_template-string`: multi-line, interpolation, String.raw
+- `02_tagged-templates`: custom template function, DSL pattern

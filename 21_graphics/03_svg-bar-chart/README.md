@@ -1,8 +1,8 @@
 # SVG Bar Chart
 
-## 🔑 Khái niệm
+## Khái niệm
 
-Vẽ biểu đồ cột (bar chart) bằng SVG: mỗi cột là `<rect>`, label là `<text>`. Dữ liệu array → tính scale → render SVG elements.
+Vẽ biểu đồ cột (bar chart) bằng SVG: mỗi cột là `<rect>`, label là `<text>`. Dữ liệu array --> tính scale --> render SVG elements.
 
 ```js
 const data = [30, 80, 45, 90, 60];
@@ -19,59 +19,78 @@ data.forEach((val, i) => {
 });
 ```
 
-## ✅ Điểm mạnh
-- SVG scalable — phóng to không mờ
-- Mỗi `<rect>` là DOM element → attach event listener riêng
-- Animation bằng CSS `transition` hoặc JS rAF
-- Accessible: `<title>`, `<desc>` trong SVG
+### Scale calculation
 
-## ⚠️ Lưu ý
+- `barHeight = (val / max) * availableHeight`
+- `x = index * (barWidth + gap) + leftPadding`
+- `y = containerHeight - barHeight` (SVG y tăng từ trên xuống)
+
+## Điểm mạnh
+
+- SVG scalable -- phóng to không mờ, retina-ready
+- Mỗi `<rect>` là DOM element --> attach event listener riêng (hover, click)
+- Animation bằng CSS transition hoặc JS rAF
+- Accessible: `<title>`, `<desc>` cho screen readers
+- Không cần thư viện ngoài -- pure SVG + JS
+
+## Lưu ý
+
 - SVG viewBox cần tính toán đúng tỷ lệ aspect ratio
 - Nhiều柱重叠 nếu không tính gap đúng
-- `Math.max` empty array → `-Infinity` → scale lỗi — cần check
+- `Math.max` empty array --> `-Infinity` --> scale lỗi -- cần check guard
+- SVG elements tạo bằng `createElementNS` với namespace "http://www.w3.org/2000/svg"
+- DOM creation nhiều lần trong loop --> dùng DocumentFragment hoặc innerHTML批量插入
 
-## 💡 Khi nào dùng
-- Dashboard widget
-- Report visualization
-- Simple chart không cần thư viện nặng
+## Khi nào dùng
 
-## 🎯 Ví dụ minh họa
+- Dashboard widget (biểu đồ đơn giản, không interactive phức tạp)
+- Report visualization (static export, print-friendly)
+- Simple chart không cần thư viện nặng (Chart.js, D3)
+- Embed trong email HTML (SVG supported trong một số clients)
 
-### Bar chart responsive
+## Ví dụ: Responsive Bar Chart
+
 ```js
 function renderBarChart(data, container) {
   const max = Math.max(...data);
-  const width = container.clientWidth;
+  const width = container.clientWidth || 600;
   const height = 300;
-  const barW = (width - data.length * 20) / data.length;
-  
+  const padding = 40;
+  const barW = (width - padding * 2 - data.length * 10) / data.length;
+
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", height);
+
   data.forEach((val, i) => {
-    const barH = (val / max) * (height - 40);
+    const barH = max > 0 ? (val / max) * (height - padding * 2) : 0;
+    const x = padding + i * (barW + 10);
+    const y = height - padding - barH;
+
     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", i * (barW + 20) + 10);
-    rect.setAttribute("y", height - barH);
+    rect.setAttribute("x", x);
+    rect.setAttribute("y", y);
     rect.setAttribute("width", barW);
     rect.setAttribute("height", barH);
     rect.setAttribute("fill", "steelblue");
-    rect.style.transition = "height 0.5s";
+    rect.style.transition = "height 0.5s ease, y 0.5s ease";
     svg.appendChild(rect);
-    
+
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", i * (barW + 20) + barW / 2 + 10);
-    text.setAttribute("y", height - 10);
+    text.setAttribute("x", x + barW / 2);
+    text.setAttribute("y", height - padding + 15);
     text.setAttribute("text-anchor", "middle");
+    text.setAttribute("font-size", "12");
     text.textContent = val;
     svg.appendChild(text);
   });
-  
+
   container.appendChild(svg);
 }
 ```
 
-## 📚 Tham khảo & Bài tập
-- File: `app.js`, `index.html` trong folder `03_svg-bar-chart/`
-- Thực hành: thêm hover tooltip hiện giá trị
-- Câu hỏi: làm sao animate bar grow từ dưới lên?
+## Tham khảo
+
+- File: `app.js`, `index.html`
+- MDN SVG: https://developer.mozilla.org/en-US/docs/Web/SVG

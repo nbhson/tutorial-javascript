@@ -1,2 +1,5 @@
-# Misc — Logical Operators
-- 01_logical-or: && và || short-circuit behavior
+# Misc — Logical Operators Pattern
+
+> Short-circuit evaluation của && và || trong JavaScript.
+
+- `01_logical-or`: && và || behavior chi tiết
