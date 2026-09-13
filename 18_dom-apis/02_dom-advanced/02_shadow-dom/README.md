@@ -1,32 +1,72 @@
-# Shadow DOM
+# Shadow DOM — Encapsulation cho Component UI
 
-## What is the Shadow DOM
+## 🔑 Khái niệm
 
-`Shadow DOM` là một công nghệ trong web development giúp tạo ra một phạm vi cục bộ và đóng gói các thành phần của giao diện người dùng (UI) trong một hộp đen, không bị ảnh hưởng từ các phần khác của trang web. Nó cung cấp một cách để che giấu và bảo vệ các chi tiết cài đặt và CSS của một thành phần, ngăn chúng bị ảnh hưởng bởi các phần khác của trang web, và ngược lại.
+**Shadow DOM** là công nghệ Web Components cho phép **gắn một cây DOM con riêng biệt** vào một element (gọi là **Shadow Host**) và bao nó trong **Shadow Boundary** — ranh giới cách ly:
 
-Shadow DOM bao gồm các phần sau:
+- **Shadow Host**: phần tử thường của trang mà bạn gắn Shadow DOM vào (`host.attachShadow({ mode: 'open'|'closed' })`).
+- **Shadow Tree**: cây DOM ẩn bên trong host — bao gồm style và các element riêng.
+- **Shadow Boundary**: "hộp kín" — **CSS và DOM bên trong không bị ảnh hưởng bởi trang**, và ngược lại, trang không nhìn thấy hay chỉnh được nội dung bên trong (khi mode `closed` càng chặt).
 
-- `Shadow Host`: Đây là phần của DOM nơi mà Shadow DOM được áp dụng. Nó là một phần tử bình thường của trang web.
-- `Shadow Tree`: Đây là cây DOM ẩn chứa các phần tử và nội dung của Shadow DOM. Nó không được truy cập trực tiếp từ bên ngoài Shadow DOM.
-- `Shadow Boundary`: Đây là ranh giới giữa Shadow DOM và phần còn lại của trang web. Nội dung trong Shadow DOM không bị ảnh hưởng bởi CSS hoặc JavaScript bên ngoài của nó.
+Mục tiêu: **encapsulation (đóng gói)** — build UI component **tái sử dụng độc lập** mà không lo xung đột style với phần còn lại của trang: không "CSS leak" ra ngoài, không bị CSS toàn cục xâm nhập, selector nội bộ không đụng nhau. Cùng với `customElements.define`, đây chính là bộ khung của tiêu chuẩn **Web Components** (như thẻ `<video>`, `<input>` nội bộ trình duyệt cũng dùng shadow tree).
 
-> Sử dụng `Shadow DOM`, bạn có thể tạo ra các thành phần có thể **tái sử dụng một cách độc lập**, mà không phải lo lắng về sự xung đột với các phần khác của trang web. Nó đặc biệt hữu ích khi xây dựng các thư viện hoặc framework UI, nơi mà việc đảm bảo tính độc lập và độ cô lập của các thành phần là quan trọng.
+Thư mục này có 2 ví dụ:
 
-## Lợi ích
+- `example1/app.js` — tạo shadow DOM **mode `closed`** trên `#appContainer`, thêm một `<div>` chữ "Hello from Shadow DOM!" cùng class `red_color`.
+- `example2/app.js` — định nghĩa **custom element** `<custom-widget>` với shadow root **mode `open`**, style qua `:host`, đăng ký bằng `customElements.define`.
 
-- `Tính Cô Lập` (Encapsulation): Shadow DOM giúp đảm bảo rằng CSS và JavaScript trong một Shadow DOM không tác động đến các phần khác của trang web và ngược lại. Điều này giữ cho mã nguồn của các thành phần được giữ cục bộ và độc lập.
-- `Bảo Mật`: Shadow DOM giúp bảo vệ mã nguồn và kiểu của thành phần khỏi sự can thiệp bên ngoài, cung cấp một lớp bảo mật cho các thành phần quan trọng.
+## ✅ Điểm mạnh
 
-# Hạn chế
+- **Cô lập CSS triệt để**: style component không "tràn" ra trang, không bị trang làm hỏng.
+- **Che giấu cấu trúc nội bộ**: logic/DOM bên trong là chi tiết cài đặt — truy cập bên ngoài bị hạn chế.
+- **Tái sử dụng an toàn**: cùng một component dùng nhiều nơi, nhiều dự án mà không đụng nhau.
+- **Bảo mật kiểu**: ngăn thành phần bên ngoài (thư viện UI tích hợp) làm rối giao diện.
+- **Hiệu năng render tốt hơn**: trình duyệt biết rõ phạm vi, quản lý style scoped hiệu quả.
 
-- `Tương Tác Khó Khăn`: Do sự cô lập, việc tương tác giữa các thành phần trong và ngoài Shadow DOM có thể trở nên phức tạp, đặc biệt là khi cần truyền dữ liệu hoặc sự kiện giữa chúng
+## ⚠️ Lưu ý / Hạn chế
 
-## Hiệu Xuất
+- **Giao tiếp ngoài-trong khó hơn**: cần cẩn thận để truyền dữ liệu/sự kiện qua boundary (thường qua attributes, events, hoặc `composed: true`).
+- **Mode `closed` hạn chế debug**: DevTools và code ngoài không "mở khóa" được shadowRoot để xem bên trong.
+- Style slider/các pseudo-class trình duyệt bên trong shadow tree hoạt động giới hạn hơn.
+- Đúng một mình Shadow DOM (không kèm `customElements`) vẫn chỉ là cách cô lập — chưa phải "component đầy đủ".
 
-- `Hiệu Suất Tốt`: Shadow DOM thường được thiết kế để cải thiện hiệu suất bằng cách giảm bớt sự can thiệp từ bên ngoài và giúp trình duyệt render nhanh hơn.
-  - `Shadow DOM` giảm bớt sự can thiệp từ bên ngoài, giúp trình duyệt dễ dàng quyết định cách render và vẽ các thành phần bên trong một Shadow DOM. Điều này có thể dẫn đến thời gian render ngắn hơn, đặc biệt là khi có nhiều thành phần được sử dụng trên một trang web.
-- `Cách Quản Lý Nội Dung Hiệu Quả`: Các phần tử bên trong Shadow DOM không tương tác trực tiếp với các phần tử khác ngoài Shadow DOM, giúp quản lý nội dung một cách hiệu quả hơn.
+## 💡 Khi nào dùng
 
-## References
+- Xây dựng **thư viện/marketplace UI widget** cần bọc kín style và hành vi.
+- Tố chức **multiple apps / plugin** trên cùng trang mà không được xung đột CSS.
+- Build **Web Components** để tái sử dụng xuyên framework (dùng trong React lẫn Vue).
+- Nhúng **third-party UI** mà không thể kiểm soát CSS toàn cục.
+- Ý tưởng encapsulation rèn luyện trước khi gặp scoped CSS của Vue (`<style scoped>`) hay CSS Modules.
 
-- Shadow DOM: <https://github.com/praveenpuglia/shadow-dom-in-depth>
+## 🎯 Ví dụ minh họa
+
+```js
+// example1 — gắn shadow cây riêng (mode closed)
+const host = document.getElementById('appContainer');
+const shadowRoot = host.attachShadow({ mode: 'closed' });
+const el = document.createElement('div');
+el.textContent = 'Hello from Shadow DOM!';
+el.classList.add('red_color');
+shadowRoot.appendChild(el);        // ngoài không truy cập được shadowRoot
+
+// example2 — custom element với style scoped qua :host
+class CustomWidget extends HTMLElement {
+  constructor() {
+    super();
+    const root = this.attachShadow({ mode: 'open' });
+    root.innerHTML = `
+      <style>:host { display:block; border:2px solid green; padding:10px; }</style>
+      <div>I'm a custom widget!</div>`;
+  }
+}
+customElements.define('custom-widget', CustomWidget);
+// dùng: <custom-widget></custom-widget>
+```
+
+## 📚 Tham khảo / Bài tập
+
+- Mở `example1/index.html` + `example1/style.css`: quan sát class `red_color` không tô màu được nội dung bên shadow tree (style ngoài không vào được); trong Console thử `appContainer.shadowRoot` — kết quả `null` vì mode `closed`.
+- Mở `example2/index.html`: có `<custom-widget>` được render với viền xanh từ `:host` — thử đổi `mode` và CSS để thấy hành vi scoped.
+- Tự làm: trong `example2`, thêm một attribute `label` và đọc nó trong `constructor()` để hiển thị lên widget.
+- Tự làm: đổi `example1` sang `{ mode: 'open' }`, sửa `.shadowRoot` rồi `shadowRoot.querySelector('div').textContent` — thấy rõ khác biệt giữa open/closed.
+- Đọc thêm: DigitalOcean/網 bài viết Shadow DOM in-depth: <https://github.com/praveenpuglia/shadow-dom-in-depth> và MDN Shadow DOM.

@@ -1,114 +1,66 @@
-# Cách thức hoạt động của JavaScript: V8 engine và 5 mẹo tối ưu hóa
+# V8 Engine — Cách JavaScript được thực thi và tối ưu
 
-## Tổng quan
+## 🔑 Khái niệm
 
-Một `JavaScript engine` là một chương trình hoặc trình thông dịch thực thi mã Javascript.
+**JavaScript engine** là chương trình/thông dịch viên thực thi mã JavaScript. Có nhiều engine: **V8** (Google, mã nguồn mở, viết bằng C++, dùng cho Chrome và Node.js), **JavaScriptCore/Nitro** (Apple/Safari), **SpiderMonkey** (Mozilla/Firefox), **Chakra** (IE/Edge cũ), **JerryScript** (IoT).
 
-Một Javascript engine có thể thông dịch như thường, hoặc biên dịch just-in-time từ Javascript thành bytecode 
+**Tại sao V8 ra đời?** Để tăng tốc JS trong trình duyệt, V8 **biên dịch JS thành machine code** thay vì chỉ thông dịch. Với thời đại hiện tại, V8 chạy theo pipeline:
 
-Đây là danh sách các dự án phổ biến đang triển khai JavaScript engine:
+1. **Parser** đọc mã nguồn → dựng **AST** (cây cú pháp trừu tượng).
+2. **Ignition** (interpreter) sinh **bytecode** từ AST — bộ nhớ chỉ bằng ~nửa so với phương pháp biên dịch trước, giúp ích cho mobile.
+3. **TurboFan** (optimizing JIT compiler) nhận bytecode và **generate machine code tối ưu** trực tiếp, thay vì biên dịch lại từ nguồn (điểm khác biệt so với Crankshaft cũ). Cả hai ra đời thay cho Full-codegen và Crankshaft.
 
-- **V8**: mã nguồn mở, được phát triển bởi Google, viết bằng C ++
-- **JavaScriptCore**: mã nguồn mở, được biết đến là Nitro và do Apple phát triển cho Safari
-- **Chakra** (JScript9): Internet Explorer
-- **Chakra** (JavaScript): Microsoft Edge
-- **JerryScript**: Là một công cụ nhẹ cho Internet of Things.
+Để truy cập property **nhanh như ngôn ngữ tĩnh**, V8 dùng:
 
-## Tại sao V8 Engine được tạo ra?
+- **Hidden Class (class ẩn)**: mỗi lần thêm property vào object đồng dạng, V8 tạo class ẩn mới với offset cố định cho property đó; các object cùng shape chia sẻ hidden class → truy cập như "fixed offset" thay vì tra cứu dictionary. Thêm/xóa property theo thứ tự khác nhau tạo **nhánh hidden class riêng** (kém tối ưu).
+- **Inline Cache (IC)**: ghi nhớ hidden class của object ở mỗi điểm truy cập property; lần sau nếu cùng loại, bỏ qua quá trình tra cứu và nhảy thẳng tới offset — khi kiểu đổi thì vá lại (cache miss).
 
-- V8 Engine được xây dựng bởi Google là mã nguồn mở và được viết bằng C ++.
-- Công cụ này được sử dụng trong Google Chrome.
-- Tuy nhiên, khác với phần còn lại của engine, V8 cũng được sử dụng phổ biến cho Node.js.
+Các ảnh trong thư mục minh họa: `rdxxidul7q_4.png` (so sánh dictionary vs fixed offset), `id968au9dy_1.png` + `9jzw4uu3x6_2.png` + `maegljn53n_3.png` (hidden class tăng dần theo `this.firstName`, `this.lastName`), `gq17f5a8fs_8.opt.png` (các nhánh hidden class), `wr2012-inline-cache.png` (cơ chế inline cache), `workflow.jpeg` / `zJeoQML.png` / `code.png` (pipeline Ignition → TurboFan → machine code).
 
-V8 lần đầu tiên được thiết kế để tăng hiệu suất việc thực hiện JavaScript bên trong các trình duyệt web. Để tối ưu hóa tốc độ, V8 chuyển code JavaScript thành machine code thay vì sử dụng một interpreter. Nó biên dịch code JavaScript thành machine code bằng cách sử dụng trình biên dịch JIT (Just-In-Time) như rất nhiều công cụ JavaScript hiện đại như SpiderMonkey hay Rhino (Mozilla). 
+## ✅ Điểm mạnh
 
-> Sự khác biệt chính ở đây là V8 không tạo ra code bytecode hoặc bất kỳ code trung gian nào.
+- **Tốc độ gần ngôn ngữ biên dịch**: JIT + hidden class + inline cache giúp code "hot" chạy rất nhanh.
+- **Bytecode nhẹ**: Ignition giảm bộ nhớ, phù hợp thiết bị di động.
+- **Kiến trúc tách tầng**: tối ưu cấp cao (<span>TurboFan</span>) và cấp thấp tách biệt, dễ thêm tính năng ngôn ngữ mới.
+- **Reusable hidden classes**: các object cùng shape tái sử dụng class ẩn, tăng tốc cho vòng lặp tạo nhiều object.
+- **Inline caching** cắt giảm chi phí lookup lặp lại cho property truy cập nhiều lần.
 
-## Fast Property Access
+## ⚠️ Lưu ý / Hạn chế
 
-### Hidden Class
+- Có **deoptimization** khi hidden class/IC đoán sai → quay về bản chậm, tốn thời gian vá lại.
+- Cấu trúc object **không nhất quán** (thêm property chỗ này, xóa chỗ kia) → nhiều nhánh hidden class, mất lợi ích tối ưu.
+- `Object.freeze` / thiết lập property động theo kiểu dictionary có thể **khóa shape**, ngăn V8 tạo hidden class.
+- Hiểu sâu V8 giúp viết code nhanh nhưng **không nên "ép" tối ưu quá mức** để chống lại engine — đo bằng profiler trước khi can thiệp.
 
-Đa số các Javascript engine đều sử dụng cấu trúc dữ liệu dạng dictionary-like, mỗi lần truy cập các property thì phải cần một dynamic lookup để solve vị trí của property này trong bộ nhớ.
+## 💡 Khi nào dùng
 
-Cách này làm cho việc truy cập vào property của Javascript chậm hơn kha khá so với truy cập vào instance variable như Java: *instance variable đặt ở các fixed offset*, được xác định bởi compiler nhờ việc bố trí fixed object layout và định nghĩa bởi class chứa object đó, vì vậy để truy cập vào property thì thường chỉ cần 1 hoặc vài lệnh và cũng chỉ là vấn đề của memory load.
+- Viết **vòng lặp nóng / hot path** (xử lý dữ liệu lớn, game loop) — khai báo object đồng dạng, tránh đổi shape.
+- Quyết định đặt property **cùng thứ tự** khi tạo object hàng loạt — tái sử dụng hidden class.
+- Nghiên cứu **cách JIT tối ưu** khi benchmark hàm — đo trước thật rồi mới tinh chỉnh.
+- Phân biệt interpreter vs compiler để hiểu vì sao cùng đoạn code chạy nhanh hơn sau vài lần lặp (warm-up).
+- Khi tự xây dựng **runtime/embed V8** (Node, Deno, Electron...) muốn nắm vòng đời thực thi.
 
-!['rdxxidul7q_4.png'](rdxxidul7q_4.png)
-
-Để giải quyết điều này, V8 sẽ tự động tạo các hidden class (class ẩn), khi một property được thêm vào object, một hidden class sẽ được tạo ra (nhiều ông developer trong và ngoài nước vẫn thường nghĩ là tạo hash table).
+## 🎯 Ví dụ minh họa
 
 ```js
+// Tạo cùng một lúc nhiều object đồng dạng -> cùng hidden class => truy cập nhanh
 function idol(firstName, lastName) {
-  this.firstName = firstName;
-  this.lastName = lastName;
+  this.firstName = firstName;   // tạo hidden class mới, offset 0
+  this.lastName  = lastName;    // tạo hidden class mới, offset 1
 }
+const a = new idol('Takizawa', 'Laura');
+const b = new idol('Ivana',    'Baquero');
+// a và b cùng shape -> chia sẻ hidden class, IC nhảy thẳng tới offset
 
-const name = new idol('Takizawa', 'Laura'); 
+// Hỏng: thêm property khác nhau giữa các instance -> nhánh riêng -> chậm hơn
+function flaky(x) { this.a = x; }
+const p1 = new flaky(1); p1.b = 2; p1.c = 3;   // shape 3 property
+const p2 = new flaky(1); p2.c = 2; p2.b = 3;   // thứ tự khác -> khác hidden class
 ```
 
-Khi idol() được gọi thì một hidden class sẽ được tạo, chẳng hạn ta gọi class là ABS130 chẳng hạn, thì field đầu tiên của Object idol trên là tham chiếu đến class `ABS130`. 
+## 📚 Tham khảo / Bài tập
 
-!['id968au9dy_1.png'](id968au9dy_1.png)
-
-Ban đầu, class ABS130 là một class rỗng, khi this.firstName = firstName được gọi, một hidden class nữa sẽ được tạo, ta gọi class này là `ABS141` chẳng hạn, class ABS141 sẽ giữ một tham chiếu đến class ABS130 (tức là class trước đó), class ABS141 sẽ có một property là firstName , value của nó được lưu tại `offset 0`, còn pointer sẽ cập nhật đến class mới là class ABS141.
-
-!['9jzw4uu3x6_2.png'](9jzw4uu3x6_2.png)
-
-Tương tự với this.lastName = lastName, ta gọi class mới là MAS087:
-
-!['maegljn53n_3.png'](maegljn53n_3.png)
-
-Mặc dù nhìn có vẻ khá lằng nhằng, nhưng cách này khá hiệu quả vì khi tạo mới object idol trong các lần tiếp theo, nếu có cùng property và thứ tự giống nhau thì sẽ có cùng các hidden class vì tất cả các hidden class đều có thể tái sử dụng, còn nếu có khác nhau vài property thì V8 sẽ tạo thêm các branch (nhánh) riêng, ví dụ:
-
-!['gq17f5a8fs_8.opt.png'](gq17f5a8fs_8.opt.png)
-
-### Inline cache
-
-- Đây là một kỹ thuật tối ưu hóa khá phổ biến và cũng khá lâu đời, phát triển lần đầu cho Smalltalk và khá hữu dụng cho mấy ngôn ngữ động. 
-  + Inline cache (bộ nhớ đệm) sẽ quan sát các method được gọi được lặp lại có xu hướng xảy ra trên cùng 1 kiểu object. 
-  + Khi method được gọi, nó sẽ cache lại kiểu của object vừa được truyền vào, và dùng nó làm giả thiết cho tham số truyền vào trong lần gọi tiếp theo. Nếu như giống nhau, nó sẽ trực tiếp trỏ đến đó và bỏ qua quá trình truy cập lằng nhằng để tìm đến property.
-
-!['wr2012-inline-cache.png'](wr2012-inline-cache.png)
-
-## Dynamic Machine Code Generation (Tạo mã máy động)
-
-Trong một project, khi code thì chắc chắn sẽ có kha khá các object có cùng hidden class, việc dùng hidden class để access vào property của object đó với sự hỗ trợ của inline cache và machine code sẽ cải thiện tốc độ khá lớn đối với các object cùng kiểu và cùng cách truy cập.
-
-Khi access vào property của object, V8 sẽ cache lại hidden class đó. Trong quá trình này, V8 tối ưu hóa bằng cách lấy hidden class để dự đoán cho các lần access tiếp theo, và sẽ lấy thông tin của hidden class đó patch inline cache code để sử dụng hidden class. Nếu đoán đúng thì value của property sẽ được gán, còn sai thì sẽ remove đoạn đó đi.
-
-Chẳng hạn ta đang access vào property firstName của object idol:
-
-```js
-idol.firstName
-```
-
-Thì machine code sẽ được generate ra thế này:
-
-```
-# ebx = idol object
-cmp [ebx,<hidden class offset>],<cached hidden class>
-jne <inline cache miss>
-mov eax,[ebx, <cached x offset>]
-```
-
-Nếu như hidden class chứa object idol không trùng với hidden class được cache từ trước, V8 runtime sẽ xử lí inline cache misses và patch lại inline cache code. Còn nếu trùng thì chỉ cần lấy property firstNameđã được cache ra là xong.
-
-## Tổng quan
-
-### Ignition và TurboFan
-- Ignition và TurboFan ra đời để tối ưu hóa tốc độ cũng như thay thế những thiếu sót của 2 người tiền nhiệm là Full-codegen và Crankshaft.
-  + TurboFan được thiết kế như là một compiler cho phép tách biệt giữa tối ưu hóa compiler cấp cao và cấp thấp, khiến cho việc thêm các tính năng mới vào Javascript mà không cần phải sửa đổi mã kiến trúc
-  + Còn với Ignition, nhìn chung lí do mà nó ra đời chính là do việc giảm bộ nhớ tiêu thụ trên điện thoại.
-
-> Sử dụng Ignition, V8 sẽ thông dịch code thành bytecode, bộ nhớ cấp phát của nó chỉ khoảng một nửa so với cách ở trên. **Sau đó V8 tận dụng bytecode có được để TurboFan generate trực tiếp ra machine code thay vì phải biên dịch lại từ mã nguồn như Crankshaft đã làm.**
-
-![workflow](workflow.jpeg)
-
-### V8 Bytecode
-
-Khi V8 biên dịch mã JavaScript, trình phân tích cú pháp (parsers) sẽ generate một cây cú pháp trừu tượng (abstract syntax tree). Ignition sẽ generate bytecode từ syntax tree. TurboFan sẽ lấy mã bytecode và generate machine code tối ưu từ nó.
-
-![zJeoQML.png](zJeoQML.png)
-
-Dịch bytecode về machine code sẽ đơn giản hơn nếu bytecode được thiết kế cùng mô hình như CPU (mỗi dòng CPU có một tập lệnh riêng).
-
-![workflow](code.png)
+- Xem ảnh minh họa trong thư mục này theo thứ tự: `rdxxidul7q_4.png` → `id968au9dy_1.png` → `9jzw4uu3x6_2.png` → `maegljn53n_3.png` → `gq17f5a8fs_8.opt.png` (hidden class), rồi `wr2012-inline-cache.png` (inline cache), cuối cùng `workflow.jpeg` → `zJeoQML.png` → `code.png` (Ignition → TurboFan).
+- Tự làm: mở DevTools → Performance, record một vòng lặp 1 triệu lần tạo object đồng dạng vs không đồng dạng; so sánh thời gian để thấy lợi ích hidden class.
+- Tự làm: thêm `--trace-opt --trace-deopt` khi chạy Node (`node --trace-deopt script.js`) để xem hàm nào bị deopt — nhận biết nguyên nhân mất tối ưu.
+- Tự làm: chạy node với cờ `--print-opt-code` cho một hàm nhỏ để đọc machine code TurboFan tạo ra (khó, chỉ để trải nghiệm pipeline).

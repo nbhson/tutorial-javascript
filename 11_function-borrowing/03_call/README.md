@@ -1,78 +1,62 @@
-# Fn.call()
+# Phương thức `call()`
 
-> Fn.call() giúp gọi hàm và bind this tới đối tượng khác, mặc định this là window object
+## 🔑 Khái niệm
 
-- Fn.call() không trả ra hàm mới, nó gọi luôn hàm sau khi bind this (Fn.bind() thì chỉ bind this nhưng không gọi hàm)
-- Fn.call() dùng để mượn hàm - function borrowing
-- Fn.call() có thể dùng để kế thừa properties & method từ 1 Constructor khác
+`fn.call(thisArg, arg1, arg2, ...)` **gọi ngay lập tức** hàm `fn` với `this` được gán bằng `thisArg`, các đối số truyền theo kiểu **danh sách** (list). Nếu không truyền `thisArg`, `this` mặc định là object global (window).
 
-**VD1**
+Khác biệt quan trọng với `bind`: `call` **không tạo hàm mới** — nó gọi luôn và trả về kết quả của hàm. `bind` chỉ khóa `this` để dùng sau.
 
-```js
-function random() {
-  console.log(Math.random());
-}
-random.call();
-```
+Ba ứng dụng lớn của `call`:
 
-**VD2 - Bind this**
+1. **Bind `this` khi gọi** — `obj2.method.call(obj1)` mượn method của obj2 cho obj1.
+2. **Kế thừa trong constructor** — `Parent.call(this, ...)` để child nhận property của parent.
+3. **Mượn method built-in** — `Array.prototype.forEach.call(arguments, fn)` xử lý object giống mảng.
 
-```js
-const teacher = {
-  firstName: "Minh",
-  lastName: "Thu",
-};
-const me = {
-  firstName: "Sơn",
-  lastName: "Nguyễn",
-  showFullName() {
-    console.log(`${this.firstName} ${this.lastName}`);
-  },
-};
+## ✅ Điểm mạnh
 
-me.showFullName(); // this là me
-me.showFullName.call(); // this là window
-me.showFullName.call(teacher); // Minh Thu - tương tự như bind, bind this, rồi call luôn :))
-```
+- Gọi hàm và ép `this` trong một cú pháp duy nhất, trả về ngay kết quả.
+- Kế thừa property+method từ constructor khác không cần prototype phức tạp.
+- Mượn method của Array/Math cho mọi object "giống mảng" (arguments, NodeList).
+- Hoạt động tốt kể cả trong strict mode khi `this` được truyền tường minh.
 
-**VD3 - strict mode**
-```js
-// khi có strict mode thì this ở scope window, log ra trong 1 hàm sẽ lỗi
-// tuy nhiên với call(this), bind this sẽ được chấp nhận và ko lỗi với strict mode
-this._lastName = "_Sơn";
-this._firstName = "_Nguyễn";
+## ⚠️ Lưu ý / Hạn chế
 
-function showName() {
-  console.log(`${this._firstName} ${this._lastName}`);
-}
-showName(); // lỗi với strict mode
-showName.call(this); // ko lỗi với strict mode
-```
+- `call()` **gọi ngay** — không dùng được để chuẩn bị hàm cho callback.
+- Không truyền `thisArg` trong strict mode sẽ gây lỗi (this mặc định undefined).
+- Chỉ nhận đối số **từng cái danh sách**; có sẵn mảng thì dùng `apply`.
+- Kế thừa qua `call` chỉ copy property, không tự động nối prototype chain.
 
-**VD4 - Tính kế thừa**
+## 💡 Khi nào dùng
+
+- Gọi constructor cha ngay trong constructor con: `Animal.call(this, name, weight)`.
+- Mượn array method cho `arguments`/`NodeList`: `[].forEach.call(...)`, `[].slice.call(...)`.
+- Ép `this` tức thời khi muốn chạy hàm với object khác ngay lập tức.
+
+## 🎯 Ví dụ minh họa
+
 ```js
 function Animal(name, weight) {
-  // console.log(this); // Chicken - do dòng 48
   this.name = name;
   this.weight = weight;
 }
 
 function Chicken(name, weight, legs) {
-  Animal.call(this, name, weight);
+  Animal.call(this, name, weight); // kế thừa name, weight
   this.legs = legs;
 }
 
-const sonNguyen = new Chicken("Sơn", 53, 2);
-console.log(sonNguyen);
+const son = new Chicken("Sơn", 53, 2);
+console.log(son); // Chicken { name: "Sơn", weight: 53, legs: 2 }
+
+// mượn hàm
+const me = { firstName: "Sơn", lastName: "Nguyễn" };
+function showFullName() {
+  console.log(`${this.firstName} ${this.lastName}`);
+}
+showFullName.call(me); // Sơn Nguyễn
 ```
 
-**VD5 - Mượn hàm**
-```js
-function logger() {
-  Array.prototype.forEach.call(arguments, (item) => {
-    // arguments là this, đang bind this là bind arguments :))
-    console.log(item);
-  });
-}
-console.log(1, 2, 3, 4, 5);
-```
+## 📚 Tham khảo / Bài tập
+
+- Chạy `03_call/app.js` (qua `index.html` hoặc `node app.js`): file demo `Animal.call(this, name, weight)` trong `Chicken` — chú ý dòng comment `Animal.bind(...)` không hoạt động để sinh property.
+- Tự thử: đổi `Animal.call(this, name, weight)` thành `Animal(this, name, weight)` (không có `.call`) và giải thích vì sao `this.name` không được gán.

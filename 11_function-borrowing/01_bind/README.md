@@ -1,58 +1,58 @@
-# bind()
+# Phương thức `bind()`
 
-- Không thực hiện gọi hàm
-- Có thể nhận các đối số như các hàm ban đầu
-- Nếu được bind kèm với agr1,agr2... thì các đối số này được ưu tiên hơn
-- bind(obj để ràng buộc method, từ tham số thứ 2 chính là các param của method đó)
-- bind() chỉ bind được phương thức, không bind được thuộc tính
+## 🔑 Khái niệm
 
+`fn.bind(thisArg, arg1, arg2, ...)` trả về một **hàm mới** với `this` được khóa lại thành `thisArg` (và các đối số đầu có thể được truyền trước). **`bind` không gọi hàm ngay** — bạn phải tự gọi hàm mới trả về:
 
 ```js
-const newFn = fn.bind(thisArg, arg1, arg2,...)
-newFn(arg1, arg1)
+const newFn = fn.bind(thisArg, arg1, arg2, ...);
+newFn(arg1, arg2);
 ```
 
-## Phương thức bind() trả về một hàm mới với this mới
+Điểm then chốt:
+
+- Hàm mới có **vùng nhớ riêng** (không bằng hàm gốc).
+- `this` của hàm mới là `thisArg`, bất kể sau đó gọi theo kiểu gì.
+- Các đối số truyền vào lúc `bind` được **ưu tiên hơn** khi gọi (partial application).
+- `bind` ràng buộc **method** chứ không bind được thuộc tính.
+
+## ✅ Điểm mạnh
+
+- Tạo hàm "đóng gói sẵn" `this` dùng cho callback, event handler mà không sợ mất context.
+- Partial application: chốt trước một phần đối số, gọi sau với phần còn lại.
+- Mượn method của object này cho object khác mà vẫn giữ vùng nhớ riêng.
+- Kết hợp dùng chung một method cho hàng loạt object.
+
+## ⚠️ Lưu ý / Hạn chế
+
+- `bind` **không gọi hàm** — quên `()` phần trước là bug kinh điển.
+- Chỉ "chốt" `this`/đối số **tại thời điểm bind**; sau đó không gỡ ra được.
+- Hàm được bind không thể đổi `this` lại bằng `call`/`apply`.
+- Không bind được thuộc tính (property), chỉ bind được phương thức/hàm.
+
+## 💡 Khi nào dùng
+
+- Gán method làm callback: `submit.onclick = obj.handle.bind(obj)`.
+- Chốt context cho list handlers: `document.querySelector.bind(document)`.
+- Tạo hàm chuyên biệt từ hàm tổng quát (prefix greeting, formatter...).
+
+## 🎯 Ví dụ minh họa
 
 ```js
-const teacher = {
-  firstName: "Minh",
-  lastName: "Thao",
-  getFullName(param1, param2) {
-    console.log(param1, param2);
-    console.log(`${this.firstName} ${this.lastName}`);
-  },
-};
+const student = { firstName: "Dang", lastName: "Son" };
 
-teacher.getFullName();
-// undefined undefined
-// Minh Thao
+function getFullName(age) {
+  return `${this.firstName} ${this.lastName} - ${age}`;
+}
 
-const getTeacherName1 = teacher.getFullName;
-console.log(getTeacherName1 === teacher.getFullName); // true - cùng vùng nhớ
-getTeacherName1(); 
-// undefined undefined
-// Minh Thu 
-// gọi 1 hàm không thông qua một đối tượng thì this là global => window || strict mode sẽ bị lỗi
+// bind this = student, đồng thời chốt sẵn đối số age = 18
+const getName = getFullName.bind(student, 18);
+console.log(getName()); // Dang Son - 18
 
-// bind - để ràng buộc nó (object/teacher) với từ khóa this với method (getFullName()) này
-const getTeacherName2 = teacher.getFullName.bind(teacher); 
-getTeacherName2(); 
-// undefined undefined
-// Minh Thao
-
-const getTeacherName3 = teacher.getFullName.bind(this); // this đang phạm vi window :))
-getTeacherName3(); 
-// undefined undefined
-// Minh Thu
+console.log(getName === getFullName); // false — hàm mới, vùng nhớ khác
 ```
 
-```js
-const student = {
-  firstName: "Dang",
-  lastName: "Son",
-};
-const getStudentName = teacher.getFullName.bind(student, "param1", "param2"); // bind this thành student
-console.log(getStudentName === teacher.getFullName); // false - khác vùng nhớ
-getStudentName(); // Dang Son :))
-```
+## 📚 Tham khảo / Bài tập
+
+- Chạy `01_bind/app.js` (qua `index.html`): xem `sonNguyen.getFullName.bind(trinhHuynh, 18)` in ra `Trinh Huynh - 18` — mượn method `getFullName` của Person cho Student.
+- Tự thử: bỏ đối số `18` ra khỏi `bind` rồi gọi `trinhHuynhFullName(20)` — quan sát `age` được lấy từ đâu.

@@ -1,76 +1,69 @@
-## Reactivity
+# Reactivity — Tự Động Đồng Bộ Dữ Liệu ↔ Giao Diện
 
-## DOM Manipulation
+## 🔑 Khái niệm
 
-- Khả Năng Reactivity: **`Thấp`**
+**Reactivity** là khả năng hệ thống **tự theo dõi sự thay đổi của dữ liệu** và **tự cập nhật giao diện** tương ứng — bạn không phải gọi tay "sửa DOM lại" sau mỗi lần đổi state. Mức độ reactivity khác nhau giữa các cách tiếp cận:
 
-  - Trong DOM Manipulation, không có sự tự động theo dõi sự thay đổi trong dữ liệu hoặc cập nhật giao diện người dùng khi dữ liệu thay đổi.
-  - Phải thực hiện các thao tác cập nhật DOM thủ công sau mỗi thay đổi trong dữ liệu.
+- **DOM Manipulation — thấp**: không có theo dõi tự động; bạn tự `innerText = ...` sau mỗi thay đổi. Phù hợp trang đơn giản; thường đi kèm jQuery/Backbone tự quản lý.
+- **Virtual DOM — cao**: framework (React, Vue) theo dõi state → dựng cây ảo mới → diff → patch phần đổi lên DOM thật. Nhờ vậy mỗi lần click/chỉnh dữ liệu là UI cập nhật đúng, ít tốn DOM.
+- **Shadow DOM — trung bình → cao**: nhờ **encapsulation + scoped CSS**, thay đổi trong shadow tree không làm rối phần còn lại của trang; khả năng "react" tốt khi kết hợp với cơ chế theo dõi của Web Components.
+- **Reactivity thuần (kiểu Vue/Polymer)**: dùng **Proxy** để *bắt* mọi thao tác đọc/ghi trên state — mỗi lần `set` chạy, lập tức cập nhật UI tương ứng (xem ví dụ trong thư mục này).
 
-- Sử Dụng Trong Framework và Thư Viện:
-  - Thường được kết hợp với các thư viện khác như jQuery hoặc Backbone
-    - Các thư viện này thường yêu cầu nhà phát triển tự định rõ quá trình cập nhật giao diện và quản lý sự kiện.
+Đoạn code trong thư mục minh họa một **reactive counter** bằng `Proxy`:
 
-## Virtual DOM
+- `state` là `new Proxy({ count: 0 }, { set })`.
+- Trong trap `set`: gán `target[key] = value` **và trực tiếp** `document.getElementById('counter').innerText = ...`.
+- Click nút → `state.count += 1` → trap `set` chạy → UI tự đổi.
 
-- Khả Năng Reactivity: **`Cao`**
+Tóm lược: *DOM thực = reactivity thấp (thao tác tay)*; *Virtual DOM = reactivity cao (tự diff/patch)*; *Proxy = nền tảng reactivity "fine-grained" dùng trong Vue/Polymer*.
 
-  - Virtual DOM thường đi kèm với khả năng reactivity, tức là có khả năng tự động theo dõi sự thay đổi trong dữ liệu và cập nhật giao diện người dùng một cách hiệu quả.
+## ✅ Điểm mạnh
 
-- Sử Dụng Trong Framework và Thư Viện:
-  - Phổ biến trong các framework như React và Vue:
-  - React và Vue sử dụng Virtual DOM để theo dõi sự thay đổi trong trạng thái ứng dụng và áp dụng cập nhật chỉ cho những phần thực sự thay đổi, giảm tải cho DOM thực tế.
+- **Tự động**: UI luôn khớp state, không quên cập nhật, không sai lệch chỗ này chỗ kia.
+- **Giảm code thao tác tay** — bớt boilerplate DOM update lặp lại.
+- **Hiệu năng tốt hơn** với Virtual DOM: chỉ patch phần thực sự đổi.
+- **Proxy không xâm lấn**: đọc/ghi qua state như bình thường, trap làm phần "phản ứng".
+- **Nền tảng của framework hiện đại**: nắm reactivity là hiểu được Vue/Polymer/Svelte.
 
-## Shadow DOM
+## ⚠️ Lưu ý / Hạn chế
 
-- Khả Năng Reactivity: **`Trung bình đến Cao`**
-  - Shadow DOM có khả năng reactivity nhờ vào cơ chế "scoped CSS" (CSS có phạm vi) và "encapsulation" (đóng gói) của nó.
-  - Sự thay đổi trong phần Shadow DOM có thể tác động đến các phần khác mà không làm ảnh hưởng đến trang web chính.
-- Sử Dụng Trong Framework và Thư Viện:
-  - Thường được sử dụng trong các web component và các framework hỗ trợ Web Components
-  - Shadow DOM là một phần quan trọng của Web Components, nơi nó giúp tạo ra các phần tử có thể tái sử dụng với encapsulation tự nhiên.
+- Proxy có **overhead nhỏ** mỗi lần truy cập và `set` phải `return true` (nếu `false` → gán coi như thất bại).
+- `Array` qua Proxy cũng bắt được nhưng cần **xử lý riêng** (chỉ số, push) — dễ bỏ sót.
+- Reactivity không miễn phí: việc **re-render quá rộng** (diff cả cây) vẫn tốn chi phí ở app lớn.
+- Khó **gỡ lỗi** khi "tự cập nhật" vô hình trung — cần tooling như Vue devtools để nhìn nguồn.
+- Đừng nhầm reactivity "tự cập nhật" với **hiệu năng tự nhiên** — vẫn phải tối ưu đúng chỗ.
 
-# Tóm Lược:
+## 💡 Khi nào dùng
 
-- `DOM Thực Trực Tiếp`: Khả năng reactivity thấp, yêu cầu thao tác thủ công để cập nhật giao diện.
-- `Virtual DOM`: Khả năng reactivity cao, tự động theo dõi sự thay đổi và áp dụng cập nhật hiệu quả.
-- `Shadow DOM`: Khả năng reactivity trung bình đến cao, có khả năng tái sử dụng và bảo toàn tính encapsulation.
+- **Ứng dụng có nhiều state** và nhiều nơi phụ thuộc vào state đó (user login, cart, form liên quan).
+- **Chọn framework**: cần reactivity cao → React/Vue (Virtual DOM) hoặc Vue/Polymer (Proxy).
+- **Widget nhỏ cần tự cập nhật** — dùng một `Proxy` reactive thay vì rải `document.getElementById` khắp nơi.
+- Muốn theo dõi sự thay đổi của **một object cụ thể** (log, trigger fetch, save).
+- Học nền tảng để hiểu cơ chế **two-way/tracked state** của các framework.
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reactivity Example</title>
-  </head>
-  <body>
-    <div>
-      <p id="counter">Số lần click: 0</p>
-      <button id="clickButton">Click me</button>
-    </div>
+## 🎯 Ví dụ minh họa
 
-    <script>
-      const state = new Proxy(
-        { count: 0 },
-        {
-          set: function (target, key, value) {
-            //Trigger any action when object change
-            target[key] = value;
-            document.getElementById(
-              "counter"
-            ).innerText = `Số lần click: ${value}`;
-            return true;
-          },
-        }
-      );
+```js
+const state = new Proxy(
+  { count: 0 },
+  {
+    set(target, key, value) {
+      target[key] = value;                            // lưu state
+      document.getElementById('counter').innerText =
+        `Số lần click: ${value}`;                     // tự cập nhật UI
+      return true;                                    // báo gán thành công
+    },
+  }
+);
 
-      document
-        .getElementById("clickButton")
-        .addEventListener("click", function () {
-          state.count += 1;
-        });
-    </script>
-  </body>
-</html>
+document.getElementById('clickButton')
+  .addEventListener('click', () => { state.count += 1; });  // UI tự đổi
 ```
+
+## 📚 Tham khảo / Bài tập
+
+- Chép đoạn `Proxy` + `counter` trong thư mục này vào một `index.html` tạm (hoặc bật Console trên một trang trống) — bấm nút, quan sát text counter tự tăng.
+- Tự làm: thêm `state.name = 'Teo'` rồi gắn `#nameOutput`; trong trap `set`, cập nhật cả hai phần tử — thấy hết khả năng "multi-target update".
+- Tự làm: cho một mảng `state.items = [];state.items.push('a')` và in ra Console — để ý vì sao `push` qua Proxy vẫn pass qua `set` (chỉ số được gán) và bạn cần bắt thêm gì nếu muốn trigger khi push.
+- Tự làm: so sánh với phiên bản **Virtual DOM** trong `03_virtual-dom/example1` — ghi nhận hai cách đạt "UI tự khớp state": diff-cây (React) vs trap-set (Proxy).
+- Đọc lại bảng so sánh ở đầu thư mục để phân biệt 3 mức: DOM thực (thấp) / Virtual DOM (cao) / Shadow DOM (trung bình-cao).

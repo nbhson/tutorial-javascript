@@ -1,44 +1,64 @@
-# Worker service (Offline-experience | Push Notification | Background sync)
+# Service Worker & Web Worker — chạy ngầm, không chặn UI
 
-`Offline Web App` là một ứng dụng web có thể chạy ngay cả khi không có kết nối internet
+## 🔑 Khái niệm
 
-Có 2 thứ cần thiết để web app có thể chạy được là: 
-  + Resources (html, js, css, ảnh,...)
-  + Router
-Thì thằng mà chúng ta sẽ tìm hiểu sau đây là JavaScript Service Worker có thể đáp ứng được cả hai việc đó.
+**Service Worker** và **Web Worker** đều là các script chạy **ở background**, tách khỏi trang web — giúp thực hiện việc không cần đến tương tác trực tiếp với User UI, giảm tải cho luồng chính (main thread).
 
-## JavaScript Service Worker là gì?
+**Service Worker** (phục vụ **Offline Web App**):
 
-- `Service Worker` là một script mà trình duyệt chạy ở dưới background, tách khỏi trang web và giúp thực hiện các tính năng không cần đến trang web, hay tương tác người dùng. `Service Worker` có một số đặc điểm quan trọng là:
+- Là **proxy** giữa trình duyệt và mạng — có thể chặn request và trả dữ liệu từ **cache**.
+- Yêu cầu để web app chạy offline: (**resources**: html/js/css/ảnh) + (**router**). Service Worker đáp ứng cả hai: listener `install`/`activate` để lưu resources vào cache, listener `fetch` để định tuyến.
+- Đặc điểm: không gắn với trang cụ thể, **không truy cập DOM**, có thể dừng khi không dùng, **chỉ hoạt động trên HTTPS** (hoặc localhost).
+- Đăng ký: `navigator.serviceWorker.register('/service_worker.js')` — trả về **Promise**; phải **same-origin**; vị trí file quyết định phạm vi URL nó quản lý.
 
-  + Không liên kết với một trang cụ thể
-  + Không truy cập đến DOM
-  + Có thể dừng khi không sử dụng và chạy khi cần thiết.
-  + Chỉ hỗ trợ HTTPS
+**Web Worker** (trong folder này):
 
-- Với Service Worker chúng ta có thể:
+- Chạy tính toán nặng trên **thread riêng**, không chặn UI.
+- Giao tiếp bằng `postMessage()` / `onmessage`.
 
-  + Làm cho trang web chạy nhanh hơn và có thể chạy offline
-  + Thực hiện một số tính năng ở background như: push message và background synchronization.
-  + Giam tải công việc của luồng chính
+## ✅ Điểm mạnh
 
-## Đăng ký JavaScript Service Worker
+- Web app chạy nhanh hơn và **chạy được khi offline** (cache + router).
+- Tính năng nền: **push notification**, **background sync**.
+- Tải công việc nặng khỏi luồng chính → UI mượt, không đơ.
+- Dữ liệu cache giúp tải lại trang nhanh như "giật từ local".
 
-- Có một số lưu ý quan trọng khi đăng ký Service Worker là:
+## ⚠️ Lưu ý / Hạn chế
 
-  + Vị trí của file service_worker.js quyết định đến URL của các trang mà nó điều khiển. Ở đây, tôi đặt file service_worker.js cùng thư mục với index.html. Có nghĩa là Service Worker sẽ quản lý URL của toàn bộ trang web. Ngược lại, nếu tôi đặt nó ở một thư mục khác, giả sử là: /apps/service_worker.js thì Service Worker sẽ chỉ quản lý các URL bắt đầu từ /apps/.
-  + Hàm đăng ký .register trả về một Promise.
-  + Trang đăng ký Service Worker phải là HTTPS.
-  + Service Worker phải nằm trên cùng trang web đăng ký nó (same origin). Vì vậy, bạn không thể đặt file service_worker.js ở một nơi khác, rồi sử dụng importScripts() được.
+- Chỉ hỗ trợ HTTPS (trừ localhost) — dev local cần `localhost`.
+- Không truy cập DOM; phải qua `postMessage` để trả kết quả.
+- `register()` trả Promise — phải xử lý lỗi, kiểm tra trình duyệt hỗ trợ.
+- Vị trí file Service Worker quyết định scope (URL nó điều khiển).
+- Lifecycle install → activate cần hiểu rõ để cache đúng phiên bản.
 
-- Sau khi đăng ký thành công, Service Worker sẽ được download về phía client và thực hiện những việc sau đây.
+## 💡 Khi nào dùng
 
-  + JavaScript Service Worker - Install
-  + JavaScript Service Worker - activate
-  + JavaScript Service Worker - fetch
+- PWA muốn chạy offline (blog, docs, mua hàng...).
+- Push notification, background sync dữ liệu.
+- Tính toán nặng (xử lý dữ liệu, mã hóa...) không muốn làm đơ UI.
 
-> Đến đây có thể đã giải đáp được cho vấn đề đưa ra ở đầu bài viết: có 2 thứ cần thiết để web app có thể chạy được là: resources (html, js, css, ảnh,...) và định tuyến.
-> Dùng listener install và activate để lưu resources vào bộ nhớ đệm cache.
->Dùng listener fetch để định tuyến.
+## 🎯 Ví dụ minh họa
 
-Link: <https://completejavascript.com/javascript-service-worker-co-ban/>, <https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers>, <https://www.youtube.com/watch?v=Gcp7triXFjg>
+```js
+// Đăng ký Service Worker (trả Promise, phải HTTPS/same-origin)
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register("/service_worker.js")
+    .then((reg) => console.log("SW registered", reg.scope))
+    .catch((err) => console.error("SW registration failed", err));
+}
+```
+
+```js
+// Tương tác Web Worker qua postMessage
+const worker = new Worker("service_worker.js");
+worker.postMessage("hello, worker");     // gửi việc sang worker
+worker.onmessage = (msg) => console.log(msg); // nhận kết quả
+```
+
+## 📚 Tham khảo / Bài tập
+
+- Mở `06_service-worker/index.html` trong trình duyệt (file dùng `main.js` + `style.css`): bấm **"Calculate Sum"** — worker tính tổng vòng lặp 10 tỷ, bấm **"Change Background"** ngay sau đó: nền vẫn đổi màu (green/blue) vì việc nặng không chặn UI.
+- Đọc `main.js` và `service_worker.js`: hiểu luồng `postMessage` → tính toán → `postMessage(sum)` trả về.
+- Tự thử: thử đặt vòng lặp 10 tỷ **chạy ngay trong main thread** để thấy UI "đơ" hoàn toàn; sau đó nghiên cứu thêm `navigator.serviceWorker.register` để cảm nhận khác biệt với Service Worker (cache, offline).
+- Tham khảo: completejavascript.com (Service Worker cơ bản), MDN "Using Service Workers", video YouTube "Service Worker" liên quan.

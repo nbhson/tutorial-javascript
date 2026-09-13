@@ -1,97 +1,65 @@
-# How does a Browser render a Webpage?
+# Trình duyệt đọc HTML như thế nào (Rendering Pipeline)
 
-Quá trình làm việc của trình duyệt web khi nhận mã nguồn HTML được chia thành các bước cụ thể
+## 🔑 Khái niệm
 
-## 1. Gửi yêu cầu (Client Request)
+Khi bạn nhập URL, trình duyệt trải qua chuỗi bước để vẽ trang:
 
-- Khi người dùng nhập một địa chỉ URL vào thanh địa chỉ của trình duyệt và nhấn Enter, trình duyệt sẽ tạo một yêu cầu HTTP đến máy chủ tương ứng để lấy trang web.
-- Yêu cầu này chứa thông tin như loại yêu cầu (GET, POST, etc.), địa chỉ URL, và các thông tin khác như header của yêu cầu.
+1. **Request**: trình duyệt tạo HTTP request tới server (GET, header...).
+2. **Server xử lý**: tìm tài nguyên, xác thực, trả **Response** kèm HTML/CSS/JS.
+3. **Download**: trình duyệt tải về các tài nguyên (tuần tự/song song).
+4. **HTML Parsing**: đọc từng ký tự HTML → chuyển thành **nodes** (mỗi thẻ là một node với attribute).
+5. **DOM Tree Construction**: sắp xếp nodes thành **cây DOM** theo hệ phân cấp cha/con. Cây này đại diện trang web và được **phơi bày cho JS** qua API — "Cái nhận về từ mạng là chuỗi text; trình duyệt parse nó thành mô hình dữ liệu mà máy hiểu".
+6. **CSSOM Construction**: các file CSS được tạo thành **CSS Object Model**.
+7. **Render Tree**: gộp DOM + CSSOM — chỉ giữ phần tử cần hiển thị.
+8. **Layout + Paint**: đặt vị trí từng phần tử rồi vẽ lên màn hình (xem `Painting-Phase*.png`).
+9. **JavaScript Execution**: nếu gặp `<script>`, JS chạy và có thể **thay đổi DOM/CSSOM** giữa chừng → render lại.
+10. **Load complete**: mọi tài nguyên xong → sự kiện `load`.
 
-## 2. Nhận và Phân tích yêu cầu (Server Processing)
+Hình vẽ trong thư mục: `DOM.png` (cây DOM), `HTML-Parsing.png` (chuỗi parse → render), `Painting-Phase-1.png` / `Painting-Phase.png` (layout/paint), `node-structure-in-dom.png` (cấu trúc node).
 
-- Máy chủ nhận yêu cầu và xử lý nó bằng cách tìm kiếm tài nguyên được yêu cầu, thực hiện các tác vụ như xác thực, kiểm tra quyền truy cập, và xử lý các yêu cầu.
+## ✅ Điểm mạnh (khi hiểu pipeline)
 
-## 3. Trả lời (Response)
+- **Biết vì sao sửa DOM lại "đắt"**: mỗi lần JS đổi DOM/CSSOM có thể kích hoạt layout + paint lại.
+- **Tối ưu đúng chỗ**: batch thay đổi, hạn chế reflow, dùng `content-visibility`... trở nên có căn cứ.
+- **Hiểu thứ tự load**: `<script>` (chặn parsing) vs `defer`/`async` — quyết định đúng khi tối ưu FCP.
+- **Nối logic với sự kiện**: vì sao phải đợi `DOMContentLoaded`/`load`.
+- **Đọc được CDP/Lighthouse reports**: "render-blocking resources", "layout shift" giờ có ý nghĩa cụ thể.
 
-- Máy chủ sẽ tạo một phản hồi HTTP chứa mã nguồn HTML, CSS, JavaScript, và các tài nguyên khác cần thiết để hiển thị trang web.
+## ⚠️ Lưu ý / Hạn chế
 
-## 4. Bắt đầu tải về (Start Downloading)
+- **Render Tree ≠ DOM Tree**: Render Tree chỉ chứa phần tử hiển thị; phần `display:none` có trong DOM nhưng không vào render.
+- **JS đang parse bị chặn**: `<script>` ở giữa trang làm **dừng HTML parser** — tài nguyên nặng làm chậm trang.
+- Cây DOM đầy đủ node text (xuống dòng) — dễ làm bạn đếm sai `childNodes`.
+- Canvas/SVG/quy trình "server-side rendering" không đi theo toàn bộ chuỗi này theo cách giống hệt.
 
-- Trình duyệt nhận được phản hồi từ máy chủ và bắt đầu quá trình tải về tài nguyên.
-- Các tài nguyên như HTML, CSS, JavaScript, hình ảnh sẽ được tải về một cách tuần tự hoặc song song tùy thuộc vào quy định của trình duyệt.
+## 💡 Khi nào dùng
 
-## 5. Phân tích HTML (HTML Parsing)
+- **Tối ưu tốc độ tải trang**: sắp xếp nơi đặt `<script>`, nén ảnh, giảm CSS render-blocking.
+- **Giải thích hiện tượng "trang nhấp nháy"**: FOUC — do CSSOM tới sau DOM.
+- **Debug layout/paint**: dùng Performance panel xem các "Layout/Paint" tasks trong một thao tác.
+- **Trước khi bàn đến CSR vs SSR**: nắm pipeline là tiền đề hiểu vì sao SSR thân thiện với SEO.
+- Trong phỏng vấn frontend — câu "browser renders HTML như thế nào" cực kỳ kinh điển.
 
-- Trình duyệt bắt đầu phân tích mã nguồn HTML khi nó được tải về.
-- Quá trình này bao gồm việc xây dựng một cây DOM `(Document Object Model)` để biểu diễn cấu trúc của trang web.
+## 🎯 Ví dụ minh họa
 
-### 5.1. Phân tích HTML (HTML Parsing)
+```html
+<!-- <script> chặn parser: DOM tiếp tục phân tích chỉ khi script đã thực thi -->
+<script src="heavy.js"></script>
 
-- Trình duyệt bắt đầu quá trình phân tích mã nguồn HTML khi nó được tải về từ máy chủ.
-- Trong quá trình này, trình duyệt đọc từng ký tự trong mã nguồn và chuyển đổi nó thành các phần tử (elements) và các nút (nodes) trong cây DOM.
-- Mỗi thẻ HTML, ví dụ như _div_, _p_, _a_, được chuyển đổi thành một phần tử trong cây DOM. Nó cũng bao gồm các thuộc tính của thẻ như class, id, src, href, v.v.
+<!-- defer: tải song song, chạy SAU khi parse xong -> không chặn -->
+<script defer src="app.js"></script>
 
-### 5.2 Xây dựng Cây DOM (DOM Tree Construction)
+<!-- Sự kiện giúp biết khi nào dùng JS gọn -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => console.log('DOM sẵn sàng'));
+  window.addEventListener('load', () => console.log('Mọi tài nguyên xong'));
+</script>
+```
 
-> Document Object Model is a high-level Web API provided by the browser to efficiently render a webpage & **expose it publically for the developers to dynamically manipulate DOM elements for various purposes.**
+## 📚 Tham khảo / Bài tập
 
-![DOM.png](DOM.png)
-
-- Khi trình duyệt đọc tài liệu HTML, bất cứ khi nào nó gặp một phần tử HTML, nó sẽ tạo ra một đối tượng JS gọi là Node. Cuối cùng, tất cả các phần tử html sẽ được chuyển đổi thành tệp Node.
-- Sau khi trình duyệt đã tạo các nút từ tài liệu HTML, nó phải tạo cấu trúc "giống cây" của các đối tượng nút này.
-- Cây DOM là một biểu diễn cây có cấu trúc của trang web, trong đó mỗi nút đại diện cho một phần tử, thuộc tính hoặc văn bản trên trang.
-
-> Cái chúng ta nhận được qua mạng là một chuỗi văn bản. Để hiển thị nội dung nào đó trên màn hình, trình duyệt phải phân tích chuỗi văn bản đó và chuyển đổi nó thành mô hình dữ liệu để có thể hiểu. Nó cũng duy trì hệ thống phân cấp từ chuỗi gốc bằng cách đặt các đối tượng được phân tích cú pháp đó vào `tree structure`
-
-- We need to do that to make the machines understand our documents better. This tree like data model of our document is called Document Object Model.
-
-### 5.3 Gắn Cây DOM vào Trình Duyệt
-
-- Sau khi cây DOM được xây dựng, nó được gắn vào trình duyệt để có thể sử dụng cho việc hiển thị và tương tác với trang web.
-- Cây DOM sẽ được sử dụng để tạo ra cấu trúc của trang và quyết định vị trí của mỗi phần tử trên trang.
-
-### 5.4 CSSOM Construction (Xây dựng CSS Object Model):
-
-- Ngoài việc xây dựng cây DOM, trình duyệt cũng xây dựng CSS Object Model (CSSOM) từ các tệp CSS được liên kết với trang.
-- CSSOM là một biểu diễn của các quy tắc CSS áp dụng cho trang.
-
-### 5.5 Render Tree Construction (Xây dựng Render Tree)
-
-- `Cây DOM` và `CSSOM` được kết hợp để tạo ra Render Tree, là một cây mô hình hóa cách trang web sẽ được hiển thị trên màn hình.
-- Chỉ các phần tử cần thiết để hiển thị trang được thêm vào Render Tree.
-
-### 5.6 Hiển thị (Rendering)
-
-- Khi Render Tree được xây dựng, trình duyệt sẽ bắt đầu quá trình hiển thị trang web, đặt các phần tử vào đúng vị trí trên màn hình dựa trên thông tin từ Render Tree.
-
-![HTML-Parsing](HTML-Parsing.png)
-
-![Alt text](Painting-Phase-1.png)
-
-## 6. Tải các tài nguyên khác (Resource Loading)
-
-- Trong quá trình phân tích HTML, trình duyệt sẽ gặp các thẻ như _link_, _script_, và _img_ chứa các đường dẫn tới các tài nguyên khác.
-- Các tài nguyên này sẽ được tải về và xử lý tương tự như HTML.
-
-## 7. Hiển thị (Rendering)
-
-- Khi tất cả các tài nguyên được tải về, trình duyệt bắt đầu quá trình hiển thị trang web.
-- Các phần tử của trang web được vị trí hóa dựa trên thông tin từ cây DOM và các kiểu CSS áp dụng.
-
-## 8. Thực hiện JavaScript (JavaScript Execution)
-
-- Nếu có mã JavaScript trong trang, trình duyệt sẽ thực hiện nó.
-- JavaScript có thể thay đổi nội dung và cấu trúc của trang, tương tác với người dùng và thực hiện các tác vụ khác.
-
-## 9. Hoàn thành (Page Load Complete)
-
-- Khi tất cả các tài nguyên đã được tải về và trang web đã được hiển thị đầy đủ, trình duyệt sẽ kích hoạt sự kiện load, cho biết rằng trang đã được tải xong.
-
-## References
-
-- Render-tree Construction, Layout, and Paint:
-  - <https://dev.to/anuradha9712/how-does-a-browser-render-a-webpage-2en8>
-  - <https://web.dev/articles/critical-rendering-path/render-tree-construction>
-  - <https://gist.github.com/nishantmendiratta/db09531f80803465da36f0d43c3e58ac>
-- Khả năng tương thích của các tính năng và API web trên các trình duyệt khác nhau:
-  - <https://caniuse.com/>
+- Xem lần lượt các ảnh: `DOM.png`, `HTML-Parsing.png`, `node-structure-in-dom.png`, `Painting-Phase-1.png` → `Painting-Phase.png` để hình dung từ parse tới vẽ.
+- Đọc thêm: Critical Rendering Path — <https://web.dev/articles/critical-rendering-path/render-tree-construction> và bài tổng quan dev.to; kiểm tra API thông qua <https://caniuse.com/>.
+- Tự làm: mở DevTools → **Performance**, record khi tải một trang, tìm các task "Parse HTML", "Layout", "Paint" — ước lượng thời gian từng pha.
+- Tự làm: thử đổi ảnh thành một ảnh rất lớn rồi quan sát "Paint large areas" để hiểu chi phí paint.
+- Tự làm: đưa một `<script>` nặng vào giữa `<body>` và cuối `<body>`; so sánh thời điểm `DOMContentLoaded` bắn ra.

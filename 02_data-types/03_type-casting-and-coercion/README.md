@@ -1,325 +1,72 @@
-# Dynamic Typing
+# Type Casting & Coercion (Ép kiểu tường minh và ngầm định)
 
-## 🔍 Dynamic Typing là gì?
+## 🔑 Khái niệm
 
-Dynamic typing (kiểu động) là một đặc điểm của ngôn ngữ lập trình trong đó kiểu dữ liệu của biến được xác định **tại thời điểm chạy** (runtime) thay vì tại thời điểm biên dịch (compile time).
+JavaScript là ngôn ngữ **kiểu động (dynamic typing)** — kiểu của biến được xác định tại runtime, và cùng một biến có thể đổi kiểu. Hệ quả tất yếu: JavaScript **tự động chuyển đổi kiểu dữ liệu** khi cần, gọi chung là **type conversion**. Có hai "hình thức":
 
-### So sánh với Static Typing
+1. **Conversion (explicit — tường minh):** lập trình viên **chủ động** gọi `String()`, `Number()`, `Boolean()`... để quy đổi kiểu:
+   ```js
+   String(123);  // "123"
+   Number("42"); // 42
+   Boolean(0);   // false
+   ```
 
-| Đặc điểm | Dynamic Typing | Static Typing |
-|----------|----------------|---------------|
-| **Thời điểm xác định kiểu** | Runtime | Compile time |
-| **Kiểm tra lỗi** | Runtime | Compile time |
-| **Hiệu suất** | Chậm hơn | Nhanh hơn |
-| **Linh hoạt** | Cao | Thấp |
-| **Ví dụ ngôn ngữ** | JavaScript, Python, Ruby | Java, C++, TypeScript |
+2. **Coercion (implicit — ngầm định):** **engine tự ép kiểu** trong các phép toán/bối cảnh mà không ai chủ động chuyển:
+   ```js
+   "5" + 3;         // "53"  — ưu tiên nối chuỗi
+   "5" - 3;         // 2     — ưu tiên số học
+   null == undefined; // true — loose equality tự "thả"
+   if ("") { /* falsy */ }
+   ```
 
-## 📝 Ví dụ minh họa
+**Tại sao phải nắm vững?** `"5" + 3` cho `"53"` còn `"5" - 3` cho `2` — cùng toán hạng, kết quả khác hoàn toàn tùy theo toán tử. Nắm vững quy tắc này tránh vô số bug "khó hiểu" nhất của JavaScript.
 
-### JavaScript (Dynamic Typing)
+**General về truthy/falsy (dùng trong `if`, `&&`, `||`, `!`):**
+- **Falsy (đúng 7 giá trị):** `false`, `0`, `-0`, `0n`, `""`, `null`, `undefined`, `NaN` → xem bài con `03_implicit` để nắm đủ.
+- **Truthy:** mọi thứ còn lại (kể cả `[]`, `{}`, `"0"`, `"false"`, `Infinity`).
 
-```javascript
-let variable = 42;        // number
-console.log(typeof variable); // "number"
+## ✅ Điểm mạnh
 
-variable = "Hello";       // string
-console.log(typeof variable); // "string"
+- Code gọn, linh hoạt: không cần khai báo kiểu, dữ liệu "tự thích nghi".
+- Coercion đôi lúc rất tiện (nối chuỗi với số, kiểm tra truthy/falsy nhanh).
+- Triết lý "duck typing" — chỉ cần đối tượng "đi như vịt, kêu như vịt" thì dùng được.
+- Rapid prototyping nhanh vì không bị ràng buộc kiểu ở giai đoạn đầu.
 
-variable = true;          // boolean
-console.log(typeof variable); // "boolean"
+## ⚠️ Lưu ý / Hạn chế
 
-variable = [1, 2, 3];     // object (array)
-console.log(typeof variable); // "object"
+- Ép kiểu ngầm dễ gây bug: `[] + []` → `""`, `{} + []` → `0`, `"9" > "10"` → `true` (so sánh chuỗi theo ký tự đầu!).
+- Production nên **ưu tiên explicit**: `Number(value)` thay vì đinh ninh `+value` luôn đúng ý bạn.
+- `Number("abc")` → `NaN`, `Number("  ")` → `0` — kết quả "buồn cười" của quy tắc whitespace.
+- `null == undefined` là `true` nhưng `null === undefined` là `false`.
+- Dùng `==` (loose) dễ rơi vào bộ quy tắc coercion phức tạp — nên dùng `===` (xem `04_equality-comparisons`).
 
-variable = { name: "John" }; // object
-console.log(typeof variable); // "object"
+## 💡 Khi nào dùng
 
-variable = function() {}; // function
-console.log(typeof variable); // "function"
+- Đọc input từ form/API (luôn là string) và cần tính toán → `Number(...)`.
+- Gửi dữ liệu lên server → chuyển object về chuỗi JSON, số về string.
+- Kiểm tra một giá trị "có đáng tin" hay không → rely truthy/falsy trong điều kiện.
+- Khi cần so sánh lỏng thật sự có chủ đích → `==` (hiểu rõ luật).
+
+## 🎯 Ví dụ minh họa
+
+```js
+// Explicit — chủ động, dễ đọc
+console.log(String(123), typeof String(123)); // "123" string
+console.log(Number("42"), Number("  "), Number("abc"), Number(true));
+// 42 0 NaN 1
+
+// Implicit — engine tự ép kiểu
+console.log("5" + 3);   // "53"  (nối chuỗi)
+console.log("5" - 3);   // 2     (số học)
+console.log(null == undefined); // true
+
+// Truthy/Falsy trong điều kiện
+if ("") console.log("truthy"); else console.log("falsy empty string");
 ```
 
-### TypeScript (Static Typing)
+## 📚 Tham khảo / Bài tập
 
-```typescript
-let variable: number = 42;
-// variable = "Hello"; // ❌ Lỗi compile time
-
-let dynamicVariable: any = 42;
-dynamicVariable = "Hello"; // ✅ OK với any type
-```
-
-## 🎯 Đặc điểm của Dynamic Typing
-
-### 1. Kiểu dữ liệu linh hoạt
-
-```javascript
-// Một biến có thể thay đổi kiểu dữ liệu
-let data = 100;           // number
-data = "one hundred";     // string
-data = [100, 200, 300];   // array
-data = { value: 100 };    // object
-```
-
-### 2. Tự động type conversion
-
-```javascript
-// JavaScript tự động chuyển đổi kiểu
-console.log("5" + 3);     // "53" (string concatenation)
-console.log("5" - 3);     // 2 (numeric subtraction)
-console.log("5" * 3);     // 15 (numeric multiplication)
-console.log("5" / 3);     // 1.666... (numeric division)
-
-// Truthy/Falsy values
-console.log(Boolean(""));     // false
-console.log(Boolean("hello")); // true
-console.log(Boolean(0));      // false
-console.log(Boolean(42));     // true
-```
-
-### 3. Duck Typing
-
-```javascript
-// "If it walks like a duck and quacks like a duck, it's a duck"
-function makeSound(animal) {
-    return animal.sound();
-}
-
-const duck = {
-    sound: () => "Quack!"
-};
-
-const dog = {
-    sound: () => "Woof!"
-};
-
-console.log(makeSound(duck)); // "Quack!"
-console.log(makeSound(dog));  // "Woof!"
-```
-
-## ✅ Ưu điểm của Dynamic Typing
-
-### 1. Linh hoạt cao
-
-```javascript
-// Có thể tạo generic functions dễ dàng
-function processData(data) {
-    if (Array.isArray(data)) {
-        return data.length;
-    } else if (typeof data === 'string') {
-        return data.length;
-    } else if (typeof data === 'object') {
-        return Object.keys(data).length;
-    }
-    return 0;
-}
-
-console.log(processData([1, 2, 3]));     // 3
-console.log(processData("hello"));       // 5
-console.log(processData({ a: 1, b: 2 })); // 2
-```
-
-### 2. Prototype-based programming
-
-```javascript
-// Có thể thêm properties và methods động
-const person = { name: "John" };
-person.age = 30;                    // Thêm property
-person.greet = function() {          // Thêm method
-    return `Hello, I'm ${this.name}`;
-};
-
-console.log(person.greet()); // "Hello, I'm John"
-```
-
-### 3. Rapid prototyping
-
-```javascript
-// Phát triển nhanh, không cần khai báo kiểu
-function createUser(name, age) {
-    return {
-        name: name,
-        age: age,
-        isAdult: age >= 18
-    };
-}
-
-const user = createUser("Alice", 25);
-console.log(user); // { name: "Alice", age: 25, isAdult: true }
-```
-
-## ❌ Nhược điểm của Dynamic Typing
-
-### 1. Lỗi runtime
-
-```javascript
-function calculateArea(width, height) {
-    return width * height;
-}
-
-// Có thể gọi với sai kiểu dữ liệu
-console.log(calculateArea("5", 10)); // 50 (không lỗi, nhưng có thể không mong muốn)
-console.log(calculateArea("abc", 10)); // NaN (lỗi runtime)
-
-// Với static typing, lỗi này sẽ được phát hiện ở compile time
-```
-
-### 2. Khó debug
-
-```javascript
-function processUser(user) {
-    // Không biết chắc user có property 'name' không
-    return user.name.toUpperCase(); // Có thể lỗi nếu user.name là undefined
-}
-
-// Lỗi chỉ xảy ra khi chạy
-// processUser({}); // TypeError: Cannot read property 'toUpperCase' of undefined
-```
-
-### 3. Hiệu suất thấp hơn
-
-```javascript
-// JavaScript engine phải kiểm tra kiểu tại runtime
-function add(a, b) {
-    // Engine phải kiểm tra kiểu của a và b mỗi lần gọi
-    return a + b;
-}
-```
-
-## 🛠️ Cách xử lý Dynamic Typing
-
-### 1. Type checking
-
-```javascript
-function safeAdd(a, b) {
-    // Kiểm tra kiểu trước khi thực hiện
-    if (typeof a === 'number' && typeof b === 'number') {
-        return a + b;
-    }
-    throw new TypeError('Both arguments must be numbers');
-}
-
-console.log(safeAdd(5, 3));     // 8
-// console.log(safeAdd("5", 3)); // TypeError
-```
-
-### 2. Default values
-
-```javascript
-function greet(name) {
-    // Đảm bảo name luôn là string
-    const safeName = String(name || 'Anonymous');
-    return `Hello, ${safeName}!`;
-}
-
-console.log(greet("John"));     // "Hello, John!"
-console.log(greet(123));        // "Hello, 123!"
-console.log(greet(null));       // "Hello, Anonymous!"
-```
-
-### 3. Validation
-
-```javascript
-function validateUser(user) {
-    const errors = [];
-    
-    if (!user || typeof user !== 'object') {
-        errors.push('User must be an object');
-    }
-    
-    if (!user.name || typeof user.name !== 'string') {
-        errors.push('User must have a valid name');
-    }
-    
-    if (typeof user.age !== 'number' || user.age < 0) {
-        errors.push('User must have a valid age');
-    }
-    
-    return errors;
-}
-
-const user1 = { name: "John", age: 30 };
-const user2 = { name: 123, age: "invalid" };
-
-console.log(validateUser(user1)); // []
-console.log(validateUser(user2)); // ["User must have a valid name", "User must have a valid age"]
-```
-
-## 🔧 Tools và Best Practices
-
-### 1. JSDoc comments
-
-```javascript
-/**
- * Calculates the area of a rectangle
- * @param {number} width - The width of the rectangle
- * @param {number} height - The height of the rectangle
- * @returns {number} The area of the rectangle
- */
-function calculateArea(width, height) {
-    return width * height;
-}
-```
-
-### 2. ESLint rules
-
-```javascript
-// .eslintrc.js
-module.exports = {
-    rules: {
-        'valid-typeof': 'error',
-        'no-undef': 'error',
-        'no-unused-vars': 'error'
-    }
-};
-```
-
-### 3. TypeScript (Static typing cho JavaScript)
-
-```typescript
-interface User {
-    name: string;
-    age: number;
-    email?: string;
-}
-
-function processUser(user: User): string {
-    return `${user.name} is ${user.age} years old`;
-}
-
-// TypeScript sẽ báo lỗi nếu truyền sai kiểu
-// processUser({ name: "John", age: "30" }); // Error: age must be number
-```
-
-## 🎯 Kết luận
-
-Dynamic typing là một đặc điểm quan trọng của JavaScript, mang lại:
-
-**Ưu điểm:**
-- ✅ Linh hoạt cao trong phát triển
-- ✅ Rapid prototyping
-- ✅ Dễ học và sử dụng
-- ✅ Prototype-based programming
-
-**Nhược điểm:**
-- ❌ Lỗi runtime khó phát hiện
-- ❌ Hiệu suất thấp hơn
-- ❌ Khó maintain code lớn
-
-**Best Practices:**
-- 🔧 Sử dụng type checking
-- 🔧 Validation input
-- 🔧 JSDoc comments
-- 🔧 ESLint rules
-- 🔧 Consider TypeScript cho dự án lớn
-
-Dynamic typing phù hợp cho:
-- Prototyping nhanh
-- Scripting
-- Web development
-- Small to medium projects
-
-Static typing phù hợp cho:
-- Large-scale applications
-- Team development
-- Critical systems
-- Long-term maintenance
+- Học 3 bài con theo thứ tự: `01_conversion-vs-coercion/` (phân biệt 2 loại), `02_explicit/` (ép kiểu tường minh), `03_implicit/` (coercion ngầm định).
+- Mỗi thư mục đều có `app.js` — chạy lần lượt bằng `node app.js` (hoặc mở `index.html`) để thấy kết quả thực tế.
+- Tự thử: đoán rồi kiểm chứng `[] + []`, `[] + {}`, `{} + []`, `"9" > "10"` trong Console; giải thích từng cái bằng quy tắc coercion và truthy/falsy.
+- Tài liệu: [MDN — Type coercion](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators), [javascript.info/type-conversions](https://javascript.info/type-conversions).

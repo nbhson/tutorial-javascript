@@ -1,51 +1,52 @@
-# Promise
+# Promise — Lý thuyết nền tảng
 
-> Promises are the foundation of asynchronous programming in modern JavaScript.
+## 🔑 Khái niệm
 
-Promises là một đối tượng được trả về bởi một hàm không đồng bộ, nó đại diện cho trạng thái hiện tại của hoạt động.
+**Promise** là đối tượng được trả về bởi một hàm bất đồng bộ, **đại diện cho trạng thái hiện tại** của hoạt động đó. Promises chính là nền tảng của lập trình bất đồng bộ hiện đại trong JavaScript.
 
-First, a promise can be in one of three states:
+Một promise có 3 trạng thái:
 
-## Promise terminology / Thuật ngữ
+- `pending` — promise đã được tạo, tác vụ chưa thành công hoặc thất bại.
+- `fulfilled` — tác vụ **thành công**; khi đó handler `.then()` được gọi.
+- `rejected` — tác vụ **thất bại**; khi đó handler `.catch()` được gọi.
 
-- `pending`: the promise has been created và chức năng không đồng bộ mà nó được liên kết vẫn chưa thành công hoặc không thành công
-- `fulfilled`: the asynchronous function has succeeded. When a promise is fulfilled, its `then()` handler is called.
-- `rejected`: the asynchronous function has failed. When a promise is rejected, its `catch()` handler is called.
+Chuỗi xử lý điển hình: `fetch()` trả về promise → `.then()` kiểm tra/parse → `.catch()` bắt lỗi → `.finally()` luôn chạy.
 
-## Catching errors (.catch)
+## ✅ Điểm mạnh
+
+- Ưu tiên cao (microtask): kết quả được xử lý ngay khi call stack trống.
+- Xử lý lỗi tập trung, tránh lồng callback.
+- Dễ kết hợp nhiều promise bằng `Promise.all`...
+- Là nền tảng cho `async/await`.
+
+## ⚠️ Lưu ý / Hạn chế
+
+- A promise **chỉ settle một lần** — trạng thái không quay lại `pending`.
+- Nếu không có `.catch()`, lỗi rejection có thể "rơi im lặng" (hoặc ném lỗi unhandled).
+- `then()` luôn trả về promise mới — dễ tạo chain dài vô tình.
+- Phải kiểm tra `response.ok` vì `fetch` không throw khi HTTP lỗi.
+
+## 💡 Khi nào dùng
+
+- Fetch dữ liệu, gọi API, đọc file — bất kỳ tác vụ bất đồng bộ nào.
+- Xử lý theo giai đoạn: kiểm tra response → parse JSON → render.
+- Chờ nhiều tác vụ cùng lúc (`Promise.all`).
+
+## 🎯 Ví dụ minh họa
 
 ```js
-const fetchPromise = fetch('bad-scheme://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json');
-
-fetchPromise
-  .then( response => {
+fetch("https://jsonplaceholder.typicode.com/posts/1")
+  .then((response) => {
     if (!response.ok) {
       throw new Error(`HTTP error: ${response.status}`);
     }
-    return response.json();
+    return response.json();   // trả về promise → nối tiếp .then
   })
-  .then( data => {
-    console.log(data[0].name);
-  })
-  .catch( error => {
-    console.error(`Could not get products: ${error}`);
-  });
+  .then((data) => console.log(data.title))
+  .catch((error) => console.error(`Could not get post: ${error}`));
 ```
 
-## Combining multiple promises (.all)
+## 📚 Tham khảo / Bài tập
 
-```js
-const fetchPromise1 = fetch('https://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/products.json');
-const fetchPromise2 = fetch('https://mdn.github.io/learning-area/javascript/apis/fetching-data/can-store/not-found');
-const fetchPromise3 = fetch('https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json');
-
-Promise.all([fetchPromise1, fetchPromise2, fetchPromise3])
-  .then( responses => {
-    for (const response of responses) {
-      console.log(`${response.url}: ${response.status}`);
-    }
-  })
-  .catch( error => {
-    console.error(`Failed to fetch: ${error}`)
-  });
-```
+- Folder này **không có file chạy** — mở DevTools Console của trình duyệt và dán đoạn trên để thử.
+- Tự thử: dùng `Promise.all` gọi 2-3 endpoint cùng lúc và in ra `url: status` của từng cái, rồi đổi sang một URL lỗi để xem `.catch` bắt lỗi như nào.

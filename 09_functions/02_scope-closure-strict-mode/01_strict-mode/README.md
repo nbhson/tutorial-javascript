@@ -1,148 +1,81 @@
-# Strict mode
+# Strict Mode (Chế độ nghiêm ngặt)
 
-> In JavaScript, the strict mode is introduced in the `ES5 (ECMAScript 2009)`. The purpose behind introducing the "strict mode" is to make the JavaScript code more secure.
+## 🔑 Khái niệm
 
-- Nhằm cải thiện một vài hạn chế trong các phiên bản trước đó
-- Tránh quên từ khóa khai báo biến
-- Sử dụng bộ nhớ hiệu quả vì tránh tạo biến global
+Strict mode xuất hiện từ **ES5 (ECMAScript 2009)** với mục đích giúp JavaScript "chặt tay" hơn: **báo lỗi** thay vì âm thầm bỏ qua những tình huống nguy hiểm, từ đó code an toàn và dễ bảo trì hơn.
 
-## Case sử dụng
+Bật bằng cách đặt chuỗi **`"use strict";`** ở một trong ba vị trí:
+1. **Đầu file** (`app.js`) — áp dụng cho toàn file.
+2. **Ngay sau thẻ mở `<script>`** — áp dụng cho cả script đó.
+3. **Đầu thân hàm** — chỉ áp dụng trong hàm (local scope).
 
-### You can't initialize the variable with a value without declaring it.
+Quan trọng: chuỗi khai báo phải nằm **trước mọi câu lệnh/nhận xét định nghĩa** — nếu phía trước đã có code, nó không có tác dụng.
+
+**Strict mode cấm / báo lỗi khi:**
+
+| Hành động | Ví dụ |
+|---|---|
+| Gán biến chưa khai báo | `x = 100;` → lỗi |
+| `delete` biến, hàm, prototype của object | `delete women;` → lỗi |
+| Gán lại thuộc tính `writable: false` | poperty đóng băng → lỗi |
+| Gán số octal dạng `010` | `let octal = 010;` → lỗi |
+| Dùng từ khóa nhạy cảm (eval, arguments, public...) làm tên biến | `let public = 100;` → lỗi |
+| Hàm có hai tham số trùng tên | `function sum(a, a) {}` → lỗi cú pháp |
+| Khai báo hàm trong block rồi gọi ngoài block | `if (true) { function sum(){} } sum();` → lỗi |
+| `this` không có đối tượng gọi | `function test(){ console.log(this) } test()` → `undefined` |
+
+Nguyên nhân cốt lõi: strict mode **ngăn các lỗi ngầm** (silent errors) của bản thân JS ở thời kỳ đầu — như tự tạo biến global từ một phép gán "lỡ tay", không cho xóa, và **tránh tạo nhiều biến global** (tiết kiệm bộ nhớ).
+
+## ✅ Điểm mạnh
+
+- **Bắt lỗi từ sớm**: tên biến sai chính tả trong phép gán sẽ lỗi ngay thay vì âm thầm tạo biến global mới.
+- **Ngăn dùng biến global không định trước** → sử dụng bộ nhớ hiệu quả và tránh xung đột.
+- Cấm các cú pháp không an toàn (octal, duplicate params) → chuẩn hóa code.
+- `this` rõ ràng hơn: hàm thường gọi trực tiếp có `this === undefined`, không ngầm trỏ `window`.
+- Được toàn bộ mô-đun ES6, class, và đa số framework tự bật mặc định.
+- Dễ áp dụng: chỉ cần một dòng `"use strict";` ở đầu.
+
+## ⚠️ Lưu ý / Hạn chế
+
+- **Chỉ có tác dụng từ vị trí khai báo trở đi** — đặt sau code thì phần trước không bị kiểm soát.
+- Khác với một số lầm tưởng: `"use strict"` là **chuỗi**, không phải câu lệnh thông thường; đặt không đúng chỗ sẽ bị bỏ qua im lặng.
+- Kết hợp với code cũ (viết theo kiểu "xả láng") có thể vỡ vì vô tình vi phạm quy tắc.
+- Các object frozen / `writable: false` — strict mode sẽ `throw` (chứ không bỏ qua), đừng bất ngờ khi thấy lỗi.
+- Không khắc phục mọi lỗi lập trình — chỉ giúp phát hiện sớm một lớp lỗi nhất định.
+
+## 💡 Khi nào dùng
+
+- Khởi đầu mọi file script/mô-đun mới — thói quen tốt mặc định.
+- Sửa bug "biến toàn cục mọc tùy tiện" trong code cũ.
+- Viết thư viện — ép người dùng khai báo đúng.
+- Học tập để hiểu chính xác hành vi của JS (đặc biệt về `this`, gán, delete).
+
+## 🎯 Ví dụ minh họa
+
 ```js
+// Nội dung app.js trong thư mục (sau khi thêm "use strict")
 "use strict";
-  let y = 50; // This is valid
-  document.write("The value of the X is: " + y);
 
-  x = 100; // This is not valid
-  document.write("The value of the X is: " + x);
-
-  numObj = {a: 89, b: 10.23}; // This is invalid
-
-```
-
-### You can't delete objects / object prototype using the delete keyword.
-
-```js
-'use strict';
-
-let women = { name: "Aasha", age: 29 };
-delete women; // This is invalid
-delete women.prototype; // This is invalid
-```
-
-### Deleting the function using the delete operator is not allowed.
-
-```js
-'use strict';
-function func() { }
-delete func; // This is invalid
-```
-
-### You can't assign octal numbers to variables.
-
-```js
-'use strict';
-let octal = 010; // Throws an error
-```
-
-### You can't use reserved keywords like eval, arguments, public, etc., as an identifier.
-
-```js
-'use strict';
-let public = 100; // Throws an error
-```
-
-### In the strict mode, when you use the 'this' keyword inside the function, it refers to the reference object through which the function is invoked. If the reference object is not specified, it refers to the undefined value.
-
-```js
-'use strict';
 function test() {
-  console.log(this); // Undefined
+  console.log(this); // undefined (không phải window/global)
 }
 test();
-```
 
-### Strict Mode in the Local Scope
-
-```js
- x = 100; // This is valid
-document.write("The value of the X is - " + x);
-function test() {
-    "use strict";
-    y = 50; // This is not valid
-    document.write("The value of the y is: " + x);
-}
-test();
-```
-
-### Báo lỗi khi hàm có tham số trùng tên 
-```js
-function sum(a, a) {
-  return a + a
-}
-console.log(sum(6,9)); // 18 nếu không có strict mode | có strict mode báo lỗi
-
-/** Không đặt tên biến, tên hàm bằng một số từ khóa nhạy cảm của ngôn ngữ */
-var let = 10;
-console.log(let);
-```
-
-### Khai báo hàm trong code block thì hàm sẽ thuộc phạm vi code block
-
-```js
-if (true) {
-  function sum(a, b) {
-    console.log(a + b);
-  }
-}
-
-sum(6,9) // 15 nếu ko có strict mode | có strict mode báo lỗi
-```
-
-### Báo lỗi khi gán lại giá trị cho thuộc tính có thể ghi: false
-
-```js
-const student = {
-  fullName: "Nguyễn Văn A",
-};
-student.fullName = "Nguyễn Văn B"; // writeable = true
-console.log(student);
-
-const student = Object.freeze({
-  // đóng băng không thể sửa
-  fullName: "Nguyễn Văn A",
-});
-student.fullName = "Nguyễn Văn B"; // writeable = false => Lỗi không sữa được
-console.log(student);
+console.log(0 == false); // true — so sánh trừu tượng không bị cấm, còn dùng === để an toàn
 ```
 
 ```js
-const student = {};
-Object.defineProperty(student, "fullName", {
-  // newnew
-  value: "Nguyễn Văn A",
-  writeable: false,
-});
-student.fullName = "Nguyễn Văn B"; //  Lỗi
-console.log(student);
+// Các hành vi bị cấm
+"use strict";
+x = 100;              // TypeError: assignment to undeclared variable
+delete someFn;        // TypeError
+let v = 010;          // SyntaxError — octal
+function f(a, a) {}   // SyntaxError — trùng tham số
 ```
 
-## Chú ý
+## 📚 Tham khảo / Bài tập
 
-### Cách thêm strict mode
-
-- Thêm use strict ở đầu file.js
-- Thêm use strict ngay sau thẻ mở <script>
-- Thêm use strict vào đầu phạm vi hàm
-
-```js
-"use strict"; // trước nó không được có đoạn code nào cả
-
-var fullName = "Nguyen Van A"; // tạo ra biến fullName ở phạm vi global
-function testFunc() {
-  // "use strict";
-  var age = 18; // tạo ra biến age ở phạm vi global
-}
-testFunc();
-```
+- Thêm `"use strict";` vào đầu `app.js` rồi mở `index.html` (Console) hoặc chạy `node app.js` — quan sát `this` thành `undefined`.
+- Tự thử: bỏ `"use strict"` và log `this` trong hàm — thấy nó trỏ global (`window`), chứng minh sự khác biệt.
+- Tự thử từng trường hợp bị cấm ở README (gán biến chưa khai báo, duplicate params, octal) và xem kiểu lỗi.
+- Ghi nhớ 3 cách bật: đầu file, đầu `<script>`, đầu hàm.
