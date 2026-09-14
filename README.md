@@ -378,5 +378,18 @@
 2. Mỗi folder có `README.md` + `app.js` — chạy `node app.js` hoặc mở `index.html`
 3. Đọc phần "Khái niệm / Điểm mạnh / Khi nào dùng" trong mỗi README
 
+## 📖 Mirror javascript.info — `js/` (175 bài, 100% coverage)
+
+> Chi tiết từng bài xem `js/README.md`. Toàn bộ 175 bài leaf của https://javascript.info đã được mirror 1:1 vào `js/` (27 thư mục: `01_introduction` → `36_regular-expressions`), mỗi file có `> Source: https://javascript.info/<slug>` và `<!-- fetched: 2026-09-14 -->`, giữ nguyên Tasks/solutions, không cắt bớt.
+
+| Phần | Thư mục `js/` | Số bài |
+|---|---|---|
+| Part 1 — The JavaScript Language | `01_introduction` → `14_misc` (14 chương) | 76 |
+| Part 2 — Browser: Document, Events | `20_browser-document` → `25_ui-misc` (6 chương) | 44 |
+| Part 3 — Additional articles | `30_frames-windows` → `36_regular-expressions` (8 chương) | 55 |
+| **Tổng** | **27 thư mục** | **175** |
+
+Xác minh `2026-09-14`: `curl https://javascript.info/tutorial/map` → 205 href unique, trừ 27 section + 3 meta = 175 leaf → khớp `find js -name "*.md" | wc -l`.
+
 ---
-*Last update: 2026-09-13 — 137 files, 100% sub-modules có README chi tiết*
+*Last update: 2026-09-14 — 137 files roadmap (00→21) + 175 files js mirror (100% javascript.info), verified via tutorial/map*
