@@ -26,7 +26,7 @@ File `app.js` trong thư mục có ba lần kiểm chứng điển hình:
 2. `eval("a b")` → `SyntaxError` (chuỗi không phải cú pháp hợp lệ).
 3. `new RangeError("range").name` → `"RangeError"`.
 
-**Cơ chế bên trong**: khi lỗi xảy ra, engine tạo một instance của error class tương ứng,填充 `name`, `message`, và `stack`. `stack` là chuỗi mô tả call stack tại thời điểm throw — mỗi dòng là một frame hàm, giúp truy vết từ lỗi đến nguyên nhân gốc.
+**Cơ chế bên trong**: khi lỗi xảy ra, engine tạo một instance của error class tương ứng, điền vào `name`, `message`, và `stack`. `stack` là chuỗi mô tả call stack tại thời điểm throw — mỗi dòng là một frame hàm, giúp truy vết từ lỗi đến nguyên nhân gốc.
 
 ## 📐 Cấu trúc / Cú pháp
 
@@ -315,7 +315,7 @@ try {
 - Luôn **log lỗi** trong `catch` — đừng swallow im lặng.
 - **Re-throw** lỗi không biết cách xử lý — đừng bắt mọi thứ.
 - Dùng **Error cause** (ES2022) để giữ chain lỗi: `new Error("wrapper", { cause: inner })`.
-- Tránh **tạo Error trong vòng lặp** — dùng sentinel value thay thế nếu performance критичен.
+- Tránh **tạo Error trong vòng lặp** — dùng sentinel value thay thế nếu performance quan trọng.
 - Map lỗi sang **HTTP status code** trong API layer — TypeError → 400, RangeError → 422.
 
 ## 🔗 Liên kết chéo

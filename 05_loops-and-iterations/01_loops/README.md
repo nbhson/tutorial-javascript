@@ -156,7 +156,7 @@ for (let i = 0; i < matrix.length; i++) {
 
 6. **Nhầm `break` và `continue`** — `break` thoát hoàn toàn, `continue` chỉ bỏ qua iter hiện tại. Đặt `continue` sau `break` trong cùng iter là dead code.
 
-7. **Vòng `while` vô hạn do quên cập nhật biến** — điều kiện永远 đúng.
+7. **Vòng `while` vô hạn do quên cập nhật biến** — điều kiện luôn luôn đúng.
    ```js
    let i = 0;
    while (i < 5) {
@@ -320,7 +320,7 @@ for (let i = 2; i <= 9; i++) {
 - **Đặt điều kiện dừng rõ ràng**: kiểm tra lại biến đếm có tiến về điều kiện dừng hay không.
 
 **Benchmark tương đối** (1 triệu lần lặp, Node.js V8):
-- `for` (kinh điển):基准速度 1x
+- `for` (kinh điển):tốc độ cơ bản 1x
 - `for...of`: ~1.1x (chậm hơn ~10%)
 - `while`: ~1.05x
 - `for...in` (trên object): ~1.3x

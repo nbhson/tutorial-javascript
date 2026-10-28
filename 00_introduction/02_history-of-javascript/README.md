@@ -40,7 +40,7 @@ Stage 0 (Strawman)  →  Ý tưởng, thảo luận mở
        ↓
 Stage 1 (Proposal)  →  Được chấp nhận nghiên cứu, có sponsor
        ↓
-Stage 2 (Draft)     →  Spec初步, API có thể thay đổi
+Stage 2 (Draft)     →  Spec sơ bộ, API có thể thay đổi
        ↓
 Stage 3 (Candidate) →  Spec gần như cuối cùng, browser bắt đầu implement
        ↓

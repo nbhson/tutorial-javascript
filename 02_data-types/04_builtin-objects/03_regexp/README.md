@@ -262,9 +262,78 @@ console.log(stickyRe.test("xabc"));        // true (bắt đầu tại index 1)
 - **ESLint `no-useless-escape`** — phát hiện escape không cần thiết trong regex literal.
 - **Limit input length** trước khi regex match — phòng ReDoS attack trên user input.
 
+## 🗺️ Lộ trình regex đầy đủ — khóa regex hoàn chỉnh trong js-info
+
+Bài này chỉ là "bản tóm tắt nhanh" của RegExp built-in. **Toàn bộ khóa regex chuyên sâu 17 bài đã có sẵn trong mirror tiếng Việt**: `js-info/vi/36_regular-expressions/`. Đừng học regex theo kiểu đọc lướt syntax — hãy đi theo lộ trình dưới đây, mỗi bước xây trên bước trước:
+
+| # | File trong `js-info/vi/36_regular-expressions/` | Chủ đề | Bạn học được gì |
+|---|---|---|---|
+| 1 | `01-patterns-flags.md` | Pattern & flags | Cú pháp `/pattern/flags`, cờ `g i m s u y` |
+| 2 | `02-character-classes.md` | Character classes | `\d`, `\w`, `\s` và dạng viết hoa đảo nghĩa |
+| 3 | `03-unicode-regexp.md` | Unicode | Cờ `u`, surrogate pairs, `\p{...}` cho tiếng Việt có dấu |
+| 4 | `04-anchors.md` | Anchors | `^` `$` — neo đầu/cuối string |
+| 5 | `05-multiline-mode.md` | Multiline mode | Cờ `m`, anchor từng dòng |
+| 6 | `06-word-boundary.md` | Word boundary | `\b` — khớp "từ nguyên vẹn" |
+| 7 | `07-escaping.md` | Escaping | `\.` — khi nào cần escape ký tự đặc biệt |
+| 8 | `08-sets-ranges.md` | Sets & ranges | `[a-z]`, `[^...]` — tập ký tự |
+| 9 | `09-quantifiers.md` | Quantifiers | `{n,m}` `+` `*` `?` — lặp bao nhiêu lần |
+| 10 | `10-greedy-lazy-quantifiers.md` | Greedy vs lazy | Vì sao `.+` "ngốn" quá mức, cách dùng `+?` |
+| 11 | `11-capturing-groups.md` | Capturing groups | `( )`, named groups `(?<name>...)` |
+| 12 | `12-backreferences.md` | Backreferences | `\1`, `$1` — dùng lại group trong pattern/replace |
+| 13 | `13-alternation.md` | Alternation | `a\|b\|c` — hoặc cái này hoặc cái kia |
+| 14 | `14-lookahead-lookbehind.md` | Lookahead/lookbehind | `(?=...)` `(?<=...)` — kiểm tra mà không "ăn" ký tự |
+| 15 | `15-catastrophic-backtracking.md` | ReDoS | Backtracking nổ tung — lỗ hổng bảo mật thực sự |
+| 16 | `16-sticky-flag.md` | Sticky flag | Cờ `y` + `lastIndex` — tokenizer tự viết |
+| 17 | `17-regexp-methods.md` | Methods tổng hợp | `test`, `match`, `matchAll`, `replace`, `split`, `exec` |
+
+**Lộ trình học gợi ý** (khớp thứ tự file ở trên):
+
+1. **Nền (01–07):** pattern, class ký tự, anchor, escape — đủ để đọc/viết regex đơn giản và validate cơ bản.
+2. **Định lượng (08–10):** ranges + quantifiers + greedy/lazy — đây là lúc bắt đầu viết được pattern "thật".
+3. **Trích xuất (11–13):** capturing groups, backreferences, alternation — trích dữ liệu có cấu trúc, replace nâng cao.
+4. **Nâng cao (14–17):** lookahead/lookbehind, ReDoS, sticky, methods tổng hợp — phục vụ parsing và production code.
+
+Đọc song song với bài này: khái niệm pattern/flags/methods cơ bản ở bài này là "bản đồ"; từng file trong js-info là "chương chi tiết". Nếu bạn chỉ có 1 buổi học regex, học theo đúng thứ tự trên — nhảy cóc sang lookahead trước khi nắm quantifiers là cách nhanh nhất để nản.
+
 ## 🔗 Liên kết chéo
 
 - Xem thêm: `02_data-types/04_builtin-objects/` — overview built-in objects
 - Xem thêm: `02_data-types/01_primitive-types/01_string/` — string methods có regex params
 - Xem thêm: `08_expressions-and-operators/01_operators/` — string operators
 - Tài liệu: [MDN — RegExp](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp), [regex101.com](https://regex101.com)
+
+## 🆕 ES2025 — RegExp.escape()
+
+**Vấn đề:** nhúng chuỗi động (đặc biệt là user input) vào `new RegExp()` — các ký tự đặc biệt (`. * + ? ^ $ { } ( ) | [ ] \`) sẽ phá vỡ pattern, gây sai kết quả hoặc injection.
+
+```js
+// ❌ Trước: tự viết helper, dễ sót ký tự
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // chưa đầy đủ
+}
+
+// ✅ ES2025: RegExp.escape() — chuẩn hóa, xử lý mọi syntax char + lone surrogate
+const query = "a+b (c)";
+const re2 = new RegExp(RegExp.escape(query));
+console.log(re2.test(query)); // true — match literal chính xác
+console.log(re2.test("aab c")); // false
+```
+
+**Ví dụ thực tế — tìm chính xác chuỗi người dùng nhập:**
+
+```js
+function highlight(text, query) {
+  const re = new RegExp(RegExp.escape(query), "gi");
+  return text.replace(re, match => `<mark>${match}</mark>`);
+}
+console.log(highlight("C++ and C# are languages", "C++"));
+// "<mark>C++</mark> and C# are languages"
+```
+
+**Browser support:** Chrome 123+, Firefox 127+, Safari 17.4+ — Baseline 2025. Với môi trường cũ hơn, fallback:
+
+```js
+const escape = RegExp.escape ?? (s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+```
+
+> 📖 MDN: [RegExp.escape()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/escape) · Tổng hợp ES2025: `22_es2025-features/README.md`

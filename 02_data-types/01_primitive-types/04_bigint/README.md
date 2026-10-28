@@ -9,7 +9,7 @@ const maxSafe = Number.MAX_SAFE_INTEGER;
 console.log(maxSafe);          // 9007199254740991
 console.log(maxSafe + 1);      // 9007199254740992 ✓
 console.log(maxSafe + 2);      // 9007199254740992 ✗ — mất chính xác!
-//                        ^^^—本该是 9007199254740993
+//                        ^^^—đáng lẽ phải là 9007199254740993
 ```
 
 BigInt giải quyết điều này bằng cách biểu diễn số nguyên **không giới hạn độ lớn** — chỉ bị giới hạn bởi bộ nhớ máy.
@@ -57,7 +57,7 @@ console.log(10n / 3n);         // 3n — phần nguyên
 | 1 | **Số nguyên chính xác tuyệt đối** | Không giới hạn 2⁵³ — phù hợp ID, hash, crypto |
 | 2 | **Đọc rất rõ nhờ hậu tố `n`** | `9007199254740993n` — phân biệt ngay với number |
 | 3 | **Phù hợp ID, timestamp nano, tiền tệ** | Sai số precision là "tử hình" trong financial/crypto |
-| 4 | **`BigInt()` chuyển đổi an toàn** | `BigInt("9007199254740993")` — string → bigint không mất精度 |
+| 4 | **`BigInt()` chuyển đổi an toàn** | `BigInt("9007199254740993")` — string → bigint không mất độ chính xác |
 | 5 | **Dùng chung với hash/crypto APIs** | Web Crypto API trả BigInt, match native |
 
 ## ⚠️ Bẫy thường gặp & Hạn chế
@@ -77,7 +77,7 @@ console.log(10n / 3n);         // 3n — phần nguyên
 1. **ID từ database vượt `Number.MAX_SAFE_INTEGER`** — MongoDB ObjectId, Facebook userID, Google API IDs.
 2. **Timestamp ở granularity nano/micro giây** — hệ thống distributed cần unique ID chính xác.
 3. **Tính toán mật mã (hash, số nguyên lớn)** — RSA, ECC, blockchain — BigInt là bắt buộc.
-4. **Mô phỏng tiền tệ大额** — khi số vượt over float precision, dùng bigint + fix decimal places.
+4. **Mô phỏng tiền tệ giá trị lớn** — khi số vượt quá độ chính xác của float, dùng bigint + fix decimal places.
 5. **Scientific computing với số nguyên lớn** — factorial, combination, permutation calculations.
 6. **Crypto key generation** — Web Crypto API trả BigInt cho modular exponentiation.
 

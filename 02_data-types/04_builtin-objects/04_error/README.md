@@ -278,7 +278,7 @@ function readFile(path) {
 - **Ghi log `e.stack`** trong production — debug lỗi runtime chính xác hơn `console.error(e.message)`.
 - **Không swallow errors** — `catch {}` là anti-pattern; log + re-throw nếu không xử lý được.
 - **Throw specific error types** — `TypeError` cho kiểu sai, `RangeError` cho giá trị ngoài range.
-- **Avoid creating large error objects** trong hot loop — stack trace allocation昂贵.
+- **Avoid creating large error objects** trong hot loop — stack trace allocation tốn kém.
 - **Use `cause` option** (ES2022) cho error chaining — giữ inner exception information.
 - **Global handlers for uncaught errors** — `window.onerror`, `process.on('uncaughtException')` cho crash recovery.
 - **Test error paths** — unit test cả happy path và error path để đảm bảo recover graceful.

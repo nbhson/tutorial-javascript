@@ -44,7 +44,7 @@ Vòng lặp xen kẽ *đọc → ghi → đọc → ghi* `offsetWidth/style` bu�
 | **Layout** | Thời gian recalculate layout | < 5ms/frame |
 | **Paint** | Thời gian vẽ pixel | < 10ms/frame |
 | **Script** | Thời gian chạy JS | < 50ms/task |
-| **GC** | Garbage collection pauses |尽量减少 |
+| **GC** | Garbage collection pauses | Cố gắng giảm thiểu |
 
 ### Flame Chart — cách đọc
 ```

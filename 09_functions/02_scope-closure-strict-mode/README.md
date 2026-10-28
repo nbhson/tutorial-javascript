@@ -342,7 +342,7 @@ test(); // undefined (không phải window)
 - **Dùng `console.trace()`** khi debug stack overflow hoặc call order issues.
 - **ES modules thay thế IIFE** — cleaner syntax, tree-shaking support, static analysis.
 - **Private class fields** (`#count`) thay closure cho encapsulation — modern, performant.
-- **Avoid deep nesting** — max 2-3层级 scope chain để maintainability.
+- **Avoid deep nesting** — max 2-3 cấp scope chain để maintainability.
 - **Test closure behavior** — đảm bảo variable không bị shared across instances unintended.
 
 **Quy tắc "3 nên — 3 không"**:

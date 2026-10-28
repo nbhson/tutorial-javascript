@@ -218,7 +218,7 @@ const val2 = undefined ?? "default";   // "default" — undefined replaced
 // ?? khi muốn default CHỈ cho null/undefined (conservative, safer)
 ```
 
-### Ví dụ 6: Coercion trong điều kiện —常见 pattern
+### Ví dụ 6: Coercion trong điều kiện — pattern phổ biến
 
 ```js
 const user = { name: "Sơn", scores: [] };

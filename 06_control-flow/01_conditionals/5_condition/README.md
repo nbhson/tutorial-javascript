@@ -273,7 +273,7 @@ console.log(isConnected ? "🟢" : "🔴"); // "🟢"
 - Luôn có `default` trong `switch` để bắt trường hợp không mong đợi.
 - Đặt điều kiện **chặt nhất lên đầu** trong `if...else if`.
 - Dùng **guard clause** (return sớm) thay `else` lồng.
-- Tránh **ternary lồng quá 2层级**.
+- Tránh **ternary lồng quá 2 cấp**.
 - Luôn dùng `===` thay `==` — tránh bẫy ép kiểu.
 
 ## 🔗 Liên kết chéo

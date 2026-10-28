@@ -57,7 +57,7 @@ Postman
 
 ## ✅ Điểm mạnh — Tại sao nên dùng
 
-1. **Kiểm thử server không cần code** — nhanh, trực quan,适合 non-developer.
+1. **Kiểm thử server không cần code** — nhanh, trực quan, phù hợp non-developer.
 2. **Lưu lịch sử request**, collections, môi trường biến để tái dùng.
 3. **Xem rõ status code, header, body** — hỗ trợ debug CORS/lỗi server.
 4. **Làm tài liệu API** — Export collection, đọc được OpenAPI/Swagger.
@@ -106,7 +106,7 @@ npx json-server --watch server.json --port 3000
 
 ```
 // Dùng {{baseUrl}} nhưng environment chưa chọn → request fail
-// Check:右上角 environment selector → chọn "Local"
+// Check: góc trên bên phải environment selector → chọn "Local"
 ```
 
 ## 💡 Khi nào dùng — Tình huống thực tế

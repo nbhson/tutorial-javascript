@@ -7,7 +7,7 @@
 2. **Diffing**: so sánh VDOM cũ vs mới (reconciliation)
 3. **Patch**: áp dụng thay đổi nhỏ nhất lên DOM thật
 
-React, Preact, Inferno… đều dùng cơ chế này. Ý tưởng cốt lõi: **thay vì手动 tính toán phần nào cần đổi, hãy描述 toàn bộ UI mới rồi để algorithm tìm difference**.
+React, Preact, Inferno… đều dùng cơ chế này. Ý tưởng cốt lõi: **thay vìthủ công tính toán phần nào cần đổi, hãy mô tả toàn bộ UI mới rồi để algorithm tìm difference**.
 
 ```
 State change
@@ -87,7 +87,7 @@ function Counter() {
     </button>
   );
 }
-//每次 setCount → React diff + patch, không re-render toàn bộ DOM
+// mỗi lần setCount → React diff + patch, không re-render toàn bộ DOM
 ```
 
 ### Minimal Virtual DOM implementation
@@ -139,7 +139,7 @@ function render(vnode, parent) {
 ## ⚠️ Bẫy thường gặp & Hạn chế
 
 1. **VDOM overhead** — bộ nhớ + CPU cho diffing — không free. App đơn giản có thể fasterdirect DOM.
-2. **Không phải lúc nào cũng nhanh hơn DOM trực tiếp** — cho simple app, DOM manipulationraw更快.
+2. **Không phải lúc nào cũng nhanh hơn DOM trực tiếp** — cho simple app, DOM manipulation raw nhanh hơn.
 3. **React 18+ có concurrent mode** giảm bớt issue này — time-slicing, progressive rendering.
 4. **Framework không dùng VDOM** (Solid, Svelte, Vue 3 with signals) đang lên ngôi — fine-grained reactivityefficient hơn.
 5. **Key prop sai** — dùng index khi list reorder → wrong updates, lost focus/scroll state.

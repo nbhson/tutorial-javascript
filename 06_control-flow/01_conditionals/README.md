@@ -314,7 +314,7 @@ const isWeekend2 = (day) => day === "Saturday" || day === "Sunday";
 - Luôn có `default` trong `switch` để bắt trường hợp không mong đợi.
 - Đặt điều kiện **chặt nhất lên đầu** trong `if...else if` chain.
 - Dùng **guard clause** (return sớm) thay `else` lồng nhau.
-- Tránh **ternary lồng quá 2层级** — chuyển sang if/else.
+- Tránh **ternary lồng quá 2 cấp** — chuyển sang if/else.
 - Không dùng ternary cho side-effect — chỉ dùng khi cần **giá trị**.
 
 **Benchmark** (không đáng kể trong app thông thường):

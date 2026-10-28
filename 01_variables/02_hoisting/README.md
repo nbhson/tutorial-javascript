@@ -63,7 +63,7 @@ console.log(gapBa(4));  // ❌ ReferenceError: Cannot access 'gapBa' before init
 const gapBa = (n) => n * 3;
 ```
 
-#### 4. Hoisting trong closure — function declaration внутри hàm khác vẫn được hoist
+#### 4. Hoisting trong closure — function declaration bên trong hàm khác vẫn được hoist
 
 ```js
 function makeCounter() {

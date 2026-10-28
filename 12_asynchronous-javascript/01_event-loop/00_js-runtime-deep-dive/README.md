@@ -95,7 +95,7 @@ infinite(); // RangeError: Maximum call stack size exceeded
 leakedVar = "I will never be GC'd"; // tạo property trên globalThis
 ```
 
-### B堡垒 3: Closure giữ reference — GC không thu gom được
+### Bẫy 3: Closure giữ reference — GC không thu gom được
 
 ```js
 function setup() {
@@ -216,7 +216,7 @@ if (performance && performance.memory) {
 - **Use WeakMap/WeakSet** — cho cache không giữ reference mạnh.
 - **Profile memory** — DevTools Memory tab, Heap snapshot.
 - **Avoid global variables** — tăng GC pressure.
-- **Reuse objects** — avoid频繁 allocation/deallocation.
+- **Reuse objects** — tránh thường xuyên allocation/deallocation.
 
 ## 🔗 Liên kết chéo
 

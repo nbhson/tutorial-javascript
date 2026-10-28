@@ -8,7 +8,7 @@ Tab **Memory** của Chrome DevTools dùng để phân tích cách ứng dụng 
 "Chụp ảnh" toàn bộ JS heap tại một thời điểm: danh sách object, kích thước (Shallow/Retained), và **Retainers** — đường tham chiếu từ root tới object, trả lời câu *"vì sao cái này chưa bị GC?"*. 
 
 - **Shallow size**: bộ nhớ object tự nó chiếm (không tính children).
-- **Retained size**: bộ nhớ object + tất cả object chỉ reachable qua nó (若 remove object này, bao nhiêu memory sẽ được free).
+- **Retained size**: bộ nhớ object + tất cả object chỉ reachable qua nó (nếu remove object này, bao nhiêu memory sẽ được free).
 
 Chụp **trước và sau một action**, so sánh 2 snapshot để tìm phần bộ nhớ không được trả lại → **memory leak**. Mục đặc biệt hữu ích: **Detached DOM** — node đã gỡ khỏi trang nhưng JS vẫn giữ tham chiếu.
 
@@ -45,7 +45,7 @@ Bước 3: post-action snapshot
 Bước 4: so sánh
   Chọn snapshot 2 → Dropdown: "Comparison"
   → "Objects allocated between snapshot 1 and 2"
-  → Sортировать theo "Shallow size" hoặc "Retained size"
+  → Sắp xếp theo "Shallow size" hoặc "Retained size"
 
 Bước 5: phân tích retainers
   Click vào object tăng → xem Retainers column
@@ -216,7 +216,7 @@ Heap snapshot → Chọn object nghi ngờ → Click "Retainers"
 - **Use "Comparison" view** — so sánh 2 snapshot thay vì guess từ 1 snapshot.
 - **Filter by Constructor** — "Array", "String", "Function" để nhanh tìm leak type.
 - **Sort by Retained size** — objects với retained size lớn nhất thường là leak sources.
-- **Check Detached filter** —专门的 detached DOM nodes filter trong Memory tab.
+- **Check Detached filter** —chuyên dụng detached DOM nodes filter trong Memory tab.
 - **Repeat 2-3 times** — GC behavior varies, repeat để xác nhận trend thật.
 - **Combine with Performance tab** — memory leak thường đi kèm performance degradation.
 - **Set memory limit awareness** — biết giới hạn heap của browser (~4GB 64-bit, ~1GB mobile).

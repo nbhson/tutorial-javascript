@@ -73,7 +73,7 @@ setTimeout(() => btn.removeEventListener('click', viec1), 5000);
 div.onclick = () => console.log('div');
 button.onclick = (e) => { e.stopPropagation(); console.log('button'); };
 
-//阻止特定链接的默认导航
+// Ngăn điều hướng mặc định của các link cụ thể
 for (const a of document.links)
   a.onclick = (e) => { if (e.target.href !== 'http://facebook.com/') e.preventDefault(); };
 ```
@@ -261,7 +261,7 @@ document.addEventListener('keydown', (e) => {
 
 - **Event delegation** khi có nhiều similar elements — 1 listener thay N listeners.
 - **Store handler reference** — cần `removeEventListener` → lưu function vào biến, không dùng anonymous.
-- **Use `{ passive: true }` cho scroll/touch** —告诉 browser handler không preventDefault → optimize.
+- **Use `{ passive: true }` cho scroll/touch** — báo cho browser biết handler không preventDefault → optimize.
 - **Use `{ once: true }` cho one-time handlers** — tự cleanup, tránh leak.
 - **Remove listeners on unmount** — component cleanup để tránh memory leak.
 - **Scope listeners** — không attach listener lên document nếu không cần.

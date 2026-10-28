@@ -198,3 +198,67 @@ const parsed = JSON.parse(json);
 - Xem thêm: `03_data-structures/02_keyed-collections` (Map/Set/WeakMap/WeakSet)
 - Xem thêm: `03_data-structures/03_typed-arrays` (Binary data)
 - Xem thêm: `03_data-structures/04_json` (Serialization)
+
+## 🆕 ES2025+ — Grouping & Set Methods
+
+### Object.groupBy() / Map.groupBy() — nhóm dữ liệu một dòng
+
+**Browser support:** Chrome 117+, Firefox 119+, Safari 17.4+, Node 21+ (ES2024).
+
+```js
+const inventory = [
+  { name: 'asparagus', type: 'veg', qty: 5 },
+  { name: 'bananas',   type: 'fruit', qty: 0 },
+  { name: 'goat',      type: 'meat', qty: 23 },
+];
+
+// ❌ Trước: reduce thủ công
+const old = inventory.reduce((acc, item) => {
+  (acc[item.type] ??= []).push(item);
+  return acc;
+}, {});
+
+// ✅ Object.groupBy — key bị coerce thành string
+const byType = Object.groupBy(inventory, ({ type }) => type);
+// { veg: [...], fruit: [...], meat: [...] }
+
+// ✅ Map.groupBy — key giữ nguyên kiểu (object, number, NaN...)
+const byQty = Map.groupBy(inventory, ({ qty }) => (qty > 0 ? 'inStock' : 'soldOut'));
+console.log(byQty.get('inStock')); // các item còn hàng
+```
+
+> 📖 MDN: [Object.groupBy()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/groupBy) · [Map.groupBy()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/groupBy)
+
+### Set Methods — phép toán tập hợp native
+
+**Browser support:** Chrome 122+, Firefox 127+, Safari 17+, Node 22+ (Baseline 2024).
+
+```js
+const a = new Set([1, 2, 3, 4]);
+const b = new Set([3, 4, 5, 6]);
+
+// ❌ Trước: viết tay
+const intersectOld = new Set([...a].filter(x => b.has(x))); // {3, 4}
+
+// ✅ ES2025: 7 method chuẩn toán học trên Set.prototype
+console.log(a.union(b));                  // Set {1, 2, 3, 4, 5, 6}  (A ∪ B)
+console.log(a.intersection(b));           // Set {3, 4}              (A ∩ B)
+console.log(a.difference(b));             // Set {1, 2}              (A \ B)
+console.log(a.symmetricDifference(b));    // Set {1, 2, 5, 6}        (A △ B)
+console.log(a.isSubsetOf(b));             // false                   (A ⊆ B?)
+console.log(a.isSupersetOf(b));           // false                   (A ⊇ B)
+console.log(a.isDisjointFrom(new Set([9, 10]))); // true             (rời nhau)
+```
+
+| Method | Trả về | Dùng khi |
+|---|---|---|
+| `union()` | Set mới | Gộp 2 tập, loại trùng |
+| `intersection()` | Set mới | Tìm phần chung |
+| `difference()` | Set mới | Loại phần thuộc set khác |
+| `symmetricDifference()` | Set mới | Phần tử chỉ thuộc 1 trong 2 tập |
+| `isSubsetOf()` / `isSupersetOf()` | boolean | Kiểm tra quan hệ bao hàm |
+| `isDisjointFrom()` | boolean | Kiểm tra 2 tập không giao nhau |
+
+> 📖 MDN: [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set) · [union()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/union) · [intersection()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/intersection) · [difference()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/difference)
+>
+> Tổng hợp đầy đủ: `22_es2025-features/README.md`

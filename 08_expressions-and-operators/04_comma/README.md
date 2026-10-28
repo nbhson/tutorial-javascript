@@ -20,7 +20,7 @@ const arr = [1, 2, 3];  // ← đây là array literal syntax
 fn(a, b, c);            // ← đây là multiple arguments syntax
 ```
 
-**Chỉ khi biểu thức đứng giữa dấu `()` trong một vị trí expect single expression** thì mới là comma operator thực sự — nó đánh giá从左 sang phải và trả về giá trị phải nhất.
+**Chỉ khi biểu thức đứng giữa dấu `()` trong một vị trí expect single expression** thì mới là comma operator thực sự — nó đánh giá từ trái sang phải và trả về giá trị phải nhất.
 
 ## 📐 Cấu trúc / Cú pháp
 
@@ -70,7 +70,7 @@ let c = (1, 2);   // c = 2 — đánh giá 1 rồi 2, trả về 2
 4. **Xuất hiện trong code thư viện/transpiler** — biết mặt để đọc mà không hoang mang khi gặp.
 5. **Có thể dùng để ép nhiều câu lệnh vào một vị trí mong đợi một expression** — utility ít dùng nhưng hữu ích.
 6. **Side-effects guaranteed** — tất cả expressions đều được evaluate (không short-circuit như `&&` `||`).
-7. **Predictable left-to-right** — thứ tự evaluation luôn从左 sang phải, không phụ thuộc engine.
+7. **Predictable left-to-right** — thứ tự evaluation luôn từ trái sang phải, không phụ thuộc engine.
 8. **Giảm boilerplate** trong `for` loop — khởi tạo và increment nhiều biến trong một dòng.
 
 ## ⚠️ Bẫy thường gặp & Hạn chế
@@ -284,7 +284,7 @@ console.log(output); // "true branch" rồi "yes"
 |---|---|---|---|
 | Comma operator | Gộp nhiều expression trong 1 chỗ | Khó đọc, linter warning | For loop với nhiều biến |
 | Multiple declarations | Rõ ràng, standard | Không gộp được trong expression | Khai báo thông thường |
-| IIFE với多个 statements | Encapsulated, clean | Boilerplate nhiều | Setup complex |
+| IIFE với nhiều statements | Encapsulated, clean | Boilerplate nhiều | Setup complex |
 | Arrow function return | Functional style | Only one return value | Single expression |
 | Sequential statements | Dễ đọc, dễ debug | Nhiều dòng code | Production code (recommended) |
 

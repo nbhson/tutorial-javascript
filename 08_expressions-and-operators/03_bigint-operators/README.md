@@ -117,7 +117,7 @@ const fromStr = BigInt("9007199254740993");
    JSON.stringify({ id: "123" }, (_, v) => typeof v === "bigint" ? v.toString() : v);
    ```
 
-5. **Vẫn có giới hạn bộ nhớ** khi số quá khổng lồ — BigInt lưu trữ động, số càng lớn càng tốn内存.
+5. **Vẫn có giới hạn bộ nhớ** khi số quá khổng lồ — BigInt lưu trữ động, số càng lớn càng tốn bộ nhớ.
 6. **Performance chậm hơn Number** — BigInt operations không được hardware accelerate như Number.
 7. **`typeof 10n === "bigint"`** — khác với Number, phải check riêng.
 8. **BigInt không có NaN, Infinity, -0** — chỉ có số nguyên.
@@ -128,7 +128,7 @@ const fromStr = BigInt("9007199254740993");
 2. **Các phép toán chính xác trong tài chính**, blockchain, tiền tệ kỹ thuật số — không chấp nhận sai số.
 3. **Tính toán số học có độ chính xác cao** — hệ số, phép đếm lớn, combinatorics.
 4. **Khi so sánh hoặc lưu trữ các con số cực lớn** không muốn mất precision.
-5. **Mật mã học** — RSA, elliptic curve đều cần số nguyên超大.
+5. **Mật mã học** — RSA, elliptic curve đều cần số nguyên siêu lớn.
 6. **Checksum, hash computation** — MD5, SHA đều thao tác trên bit của số lớn.
 
 ## 🎯 Ví dụ minh họa — Từ cơ bản đến nâng cao

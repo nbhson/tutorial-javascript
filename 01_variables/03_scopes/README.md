@@ -134,7 +134,7 @@ console.log(color);              // "red" — global không bị ảnh hưởng
 | 3 | **Giải phóng bộ nhớ tự động** | Biến ra khỏi scope → GC thu hồi — tiết kiệm RAM |
 | 4 | **Block scope của let/const** | Biến lặp `for` không rò rỉ ra ngoài — tránh bug kinh điển |
 | 5 | **Debug dễ hơn** | Biết scope nào đang xét → tìm nhanh nguyên nhân "undefined" |
-| 6 | **Viết module encapsulation** | IIFE + scope隔离 — pattern quan trọng cho library development |
+| 6 | **Viết module encapsulation** | IIFE + scope cô lập — pattern quan trọng cho library development |
 
 ## ⚠️ Bẫy thường gặp & Hạn chế
 
@@ -266,7 +266,7 @@ for (let j = 0; j < 3; j++) {
 
 | Phương án | Ưu điểm | Nhược điểm |
 |-----------|---------|------------|
-| **Block scope (let/const)** | An toàn, biến không rò rỉ | Không兼容 IE11 |
+| **Block scope (let/const)** | An toàn, biến không rò rỉ | Không tương thích IE11 |
 | **Function scope (var)** | Hỗ trợ mọi browser | Biến rò rỉ ra ngoài block, dễ gây bug |
 | **IIFE module pattern** | Encapsulation, private state | Cú pháp verbose, cần hiểu scope chain |
 | **ES Module (import/export)** | Encapsulation tự nhiên, tree-shakeable | Cần build tool hoặc module support |

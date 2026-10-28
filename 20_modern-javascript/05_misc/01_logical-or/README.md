@@ -74,7 +74,7 @@ const count = 0;
 console.log(count || 10);   // 10  <-- Sai: 0 là hợp lệ
 console.log(count ?? 10);   // 0   <-- Đúng
 
-//实际应用: feature detection
+// Ứng dụng thực tế: feature detection
 const storage = window.localStorage || sessionStorage;
 const logger = config.logger || console;
 ```

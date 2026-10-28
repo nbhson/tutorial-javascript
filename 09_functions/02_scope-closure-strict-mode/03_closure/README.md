@@ -28,7 +28,7 @@ console.log(_counter1()); // 3
 
 Bạn gọi `createCounter()` **một lần** → tạo **một phạm vi** riêng với biến `counter = 0`. Hàm `increase` trả về được giữ ở biến ngoài, nhờ closure mà nó vẫn "nhìn thấy" `counter` và mỗi lần gọi lấy **giá trị mới nhất** của biến đó → `1, 2, 3`.
 
-**Cơ chế bên trong engine**: khi `createCounter()` return, normally scope của nó会被 GC destroy. Nhưng vì `increase` (được trả về) còn reference đến `counter`, V8/SpiderMonkey **giữ lại scope object** đó trong memory — đây chính là closure. Scope object chứa `counter` và mọi biến outer scope mà `increase` cần access.
+**Cơ chế bên trong engine**: khi `createCounter()` return, normally scope của nó sẽ bị GC destroy. Nhưng vì `increase` (được trả về) còn reference đến `counter`, V8/SpiderMonkey **giữ lại scope object** đó trong memory — đây chính là closure. Scope object chứa `counter` và mọi biến outer scope mà `increase` cần access.
 
 README cũ còn cho hai ứng dụng thực tế:
 - **`createLogger(namespace)`** — trả về hàm log "nhớ" namespace, ra `[Info] Bắt đầu gửi mail!`, `[Error] Có lỗi!`.
@@ -423,7 +423,7 @@ function safePattern() {
 - **Always null/release closure when done** — prevent memory leak, especially in long-running apps.
 - **Prefer primitive capture over object capture** — `const len = arr.length; return () => len;` better than `return () => arr.length;`.
 - **Use `let` in loops** — each iteration gets its own closure scope, avoid var sharing bug.
-- **Limit closure depth** — max 2-3层级, quá sâu = khó debug, memory overhead.
+- **Limit closure depth** — max 2-3 cấp, quá sâu = khó debug, memory overhead.
 - **Memoization with care** — cache size bounded, clear cache when memory pressure.
 - **Document closure intent** — comment why closure is used, what state it captures.
 - **Prefer classes for complex state** — class + `#private` fields clearer than deep closures.
@@ -436,7 +436,7 @@ function safePattern() {
 - ✅ Nên dùng `let` trong loop + async callback.
 - ✅ Nên document closure purpose in code.
 - ❌ Không nên closure giữ large object không cần thiết.
-- ❌ Không nên nested closure quá 3层级.
+- ❌ Không nên nested closure quá 3 cấp.
 - ❌ Không nên quên release closure trong long-running app.
 
 ## 🔗 Liên kết chéo

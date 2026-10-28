@@ -38,7 +38,7 @@ fetch(url, {
   integrity: "",          // subresource integrity hash
   signal: abortController.signal, // hủy request
   keepalive: false,       // cho background send
-  window: null            // chỉ browser,通常为 null
+  window: null            // chỉ browser, thường là null
 });
 ```
 

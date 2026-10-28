@@ -111,7 +111,7 @@ console.log(Object.prototype.toString.call(customObj));
 3. **Custom iterator**: gắn `[Symbol.iterator]` cho object học tự chạy được trong `for...of`.
 4. **Cache key bảo mật**: tránh ghi đè từ bên ngoài bằng symbol key thay string key.
 5. **Plugin/mixin pattern**: thêm method vào prototype mà không sợ collision với existing methods.
-6. **Internal framework state**: lưu internal data trên DOM element безpolluting public API.
+6. **Internal framework state**: lưu internal data trên DOM element mà không làm bẩn (polluting) public API.
 
 ## 🎯 Ví dụ minh họa — Từ cơ bản đến nâng cao
 

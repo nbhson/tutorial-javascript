@@ -367,7 +367,7 @@ const add5 = add(5);
 console.log(add5(3)); // 8
 console.log(add(2)(3)); // 5
 
-//实际应用: API builder
+// Ứng dụng thực tế: API builder
 const createFetcher = baseUrl => endpoint => `/api/${baseUrl}/${endpoint}`;
 const usersApi = createFetcher("users");
 console.log(usersApi("list"));    // "/api/users/list"

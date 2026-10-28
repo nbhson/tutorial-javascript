@@ -315,7 +315,7 @@ console.log(maxNew(1, 5, 3, 9, 2)); // 9
 
 // Math.max native với spread
 console.log(Math.max(...[1, 5, 3, 9, 2])); // 9
-// ⚠️ Giới hạn: spread có thể overflow với массив >100k elements
+// ⚠️ Giới hạn: spread có thể overflow với mảng >100k elements
 ```
 
 ## 🔬 So sánh với alternatives
@@ -345,7 +345,7 @@ console.log(Math.max(...[1, 5, 3, 9, 2])); // 9
 - **Luôn convert arguments** sang mảng thật trước khi dùng array methods.
 - **Dùng `"use strict"`** để decouple arguments khỏi named parameters.
 - **Arrow function** — dùng rest parameter, không mong đợi arguments.
-- **Documentation** —写明 function accepts variable args: `@param {...number} nums`.
+- **Documentation** — ghi rõ function accepts variable args: `@param {...number} nums`.
 - **TypeScript** — rest parameter có type annotation: `...nums: number[]`.
 - **Avoid `arguments.callee`** — bị cấm trong strict mode, deprecated, security risk.
 

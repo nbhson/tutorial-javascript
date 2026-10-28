@@ -266,7 +266,7 @@ console.log(parseInt("12abc"));        // 12 — dừng tại ký tự không ph
 |-----------|---------|------------|-------------|
 | **Native Number** | Built-in, fast, no dependency | Floating point precision loss | General math, non-financial |
 | **BigInt** | Exact integer arithmetic, arbitrary size | Slower, can't mix with Number | Cryptography, large IDs |
-| **decimal.js / big.js** | Arbitrary precision decimal | Extra dependency, API学习 | Financial calculations |
+| **decimal.js / big.js** | Arbitrary precision decimal | Extra dependency, API cần học | Financial calculations |
 | **Integer cents** | Exact for currency, simple | Must convert back/forth | Small-scale money handling |
 | **Math.js** | Full math library (matrix, unit, complex) | Heavy dependency | Scientific computing |
 

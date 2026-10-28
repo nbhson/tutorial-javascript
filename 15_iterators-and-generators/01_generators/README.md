@@ -168,7 +168,7 @@ for (const v of infinite()) { if (++count >= 10) break; }
 1. **ID tự tăng vô hạn** — `function* uid() { let i = 0; while (true) yield ++i; }` thay vì pre-generate mảng.
 2. **Stream file lớn** — đọc từng chunk, xử lý rồi discard, không load cả file vào RAM.
 3. **API phân trang** — `async function* pages() { while (next) { yield await fetch(next); next = resp.next; } }`
-4. **Finite State Machine** — game AI, workflow approval,每一步 yield state rồi nhận trigger.
+4. **Finite State Machine** — game AI, workflow approval, mỗi bước yield state rồi nhận trigger.
 5. **Tree traversal** — duyệt DOM/AST/cấu trúc cây theo pre-order/in-order/post-order.
 6. **Data pipeline** — `pipe(map, filter, take)(source)` mà không tạo mảng trung gian.
 7. **Virtual scroller** — chỉ render N items được yêu cầu, không tải hết danh sách.
@@ -190,7 +190,7 @@ const ids = idCreator();            // ⚠️ chưa chạy code — chỉ tạo 
 console.log(ids.next().value);      // 0
 console.log(ids.next().value);      // 1
 console.log(ids.next().value);      // 2
-// Có thể gọi vô hạn lần mà không tốn bộ nhớ额外
+// Có thể gọi vô hạn lần mà không tốn bộ nhớ thêm
 ```
 
 ### Ví dụ 2: Fibonacci vô hạn

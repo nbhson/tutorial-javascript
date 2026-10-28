@@ -52,7 +52,7 @@ promise
 2. **Xử lý lỗi tập trung**, tránh lồng callback.
 3. **Dễ kết hợp nhiều promise** bằng `Promise.all`, `Promise.race`, `Promise.allSettled`.
 4. **Nền tảng cho `async/await`** — async/await là syntactic sugar trên promise.
-5. **State是不可逆** — promise settled một lần, không thể thay đổi, đảm bảo consistency.
+5. **State là không thể đảo ngược** — promise settled một lần, không thể thay đổi, đảm bảo consistency.
 6. **Chainable** — `.then()` trả về promise mới, nối tiếp vô hạn.
 7. **Error propagation** — lỗi tự động propagate xuống `.catch()` gần nhất.
 

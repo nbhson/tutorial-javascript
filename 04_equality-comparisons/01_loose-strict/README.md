@@ -9,7 +9,7 @@
 ### Thuật toán Abstract Equality (ECMA-262 §11.9.3)
 
 ```
-1. Nếu不同类型 → false (trừ null/undefined)
+1. Nếu khác kiểu (type) → false (trừ null/undefined)
 2. Nếu cùng Type Number:
    - NaN → false
    - SameValue → true

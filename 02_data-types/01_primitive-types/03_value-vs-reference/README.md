@@ -264,7 +264,7 @@ console.log(frozenConfig.host);   // "localhost"
 - **Tránh `JSON.parse/stringify`** cho object chứa `undefined`, `function`, `Date` — dữ liệu bị biến đổi.
 - **Dùng `Object.freeze()`** cho config/constants — shallow immutable, phòng mutate ngoài ý muốn.
 - **React state: immutable update pattern** — `setState({...state, key: newVal})` thay vì mutate directly.
-- **Truyền bản sao vào hàm mutate** — nếu hàm cần sửa object, copy trước rồi传进去, return lại.
+- **Truyền bản sao vào hàm mutate** — nếu hàm cần sửa object, copy trước rồi truyền vào, return lại.
 - **Kiểm tra `Array.isArray()`** trước khi spread/array copy — `typeof [] === "object"`.
 
 ## 🔗 Liên kết chéo

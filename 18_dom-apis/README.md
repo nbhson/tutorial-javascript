@@ -80,7 +80,7 @@ document (Document Node, nodeType 9)
 5. **Encapsulation có sẵn** qua Shadow DOM giúp build component tái sử dụng an toàn.
 6. **Không cần thư viện** — DOM API có sẵn trong browser, zero dependency.
 7. **Debug dễ** — DevTools Elements panel hiển thị DOM realtime, có thể edit trực tiếp.
-8. **Performance可控** — biết reflow/threshold giúp tối ưu đúng chỗ.
+8. **Performance kiểm soát được** — biết reflow/threshold giúp tối ưu đúng chỗ.
 9. **Accessibility built-in** — ARIA attributes qua DOM API giúp screen reader đọc đúng.
 10. **Foundation cho Web Components** — Shadow DOM + Custom Elements = component system chuẩn.
 

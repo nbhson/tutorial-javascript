@@ -47,7 +47,7 @@ function addCourses(data, callback) {
     .then(callback);
 }
 
-// UPDATE — PUT full / PATCH partial (bài tập)
+// UPDATE — PUT full / PATCH partial (xem "Ví dụ 4: Update (PUT)" bên dưới)
 function updateCourse(id, data) {
   return fetch(`${coursesAPI}/${id}`, {
     method: "PUT",        // hoặc "PATCH" cho partial
@@ -89,11 +89,12 @@ function deleteCourse(id) {
 
 ## ⚠️ Bẫy thường gặp & Hạn chế
 
-### Bẫy 1: Demo chỉ có Create/Read/Delete — Update chưa code
+### Bẫy 1: Update (PUT/PATCH) hay bị bỏ qua — đừng dừng ở Create/Read/Delete
 
 ```js
-// File hiện tại thiếu updateCourse()
-// Bài tập: tự viết PUT/PATCH handler
+// Bản demo tối giản thường chỉ có Create/Read/Delete.
+// Implement đầy đủ Update xem "Ví dụ 4: Update (PUT) — triển khai hoàn chỉnh" bên dưới:
+// bấm Sửa → điền data vào form → đánh dấu form.dataset.editingId → submit chạy PUT thay vì POST.
 ```
 
 ### Bẫy 2: `server.json` cần resource đúng tên — `courses` ≠ `coures`
@@ -335,10 +336,10 @@ async function crudApp() {
 crudApp();
 ```
 
-### Ví dụ 4: Exercise — thêm Update (PUT)
+### Ví dụ 4: Update (PUT) — triển khai hoàn chỉnh
 
 ```js
-// TODO: Implement updateCourse function
+// UPDATE — PUT ghi đè toàn bộ resource (PATCH chỉ ghi đè field gửi lên)
 async function updateCourse(id, data) {
   const res = await fetch(`http://localhost:3000/courses/${id}`, {
     method: "PUT",           // hoặc "PATCH" cho partial update
@@ -349,11 +350,43 @@ async function updateCourse(id, data) {
   return res.json();
 }
 
-// Usage: edit button click handler
+// Nút Sửa hiển thị trong mỗi <li>
 function renderEditButton(course) {
   return `<button class="edit" data-id="${course.id}">Sửa</button>`;
 }
+
+// Wire-up: bấm Sửa → điền data hiện tại vào form → submit chạy PUT thay vì POST
+const form = document.getElementById("course-form");
+
+document.getElementById("list-course").addEventListener("click", (e) => {
+  if (!e.target.classList.contains("edit")) return;
+  const li = e.target.closest("li");
+  const id = e.target.dataset.id;
+  // điền giá trị hiện tại vào form để user sửa
+  form.querySelector('input[name="name"]').value = li.querySelector("strong").textContent;
+  form.querySelector('input[name="description"]').value =
+    li.textContent.replace(li.querySelector("strong").textContent, "").trim();
+  form.dataset.editingId = id; // đánh dấu form đang ở chế độ edit
+});
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const data = {
+    name: form.querySelector('input[name="name"]').value,
+    description: form.querySelector('input[name="description"]').value,
+  };
+  if (form.dataset.editingId) {
+    await updateCourse(form.dataset.editingId, data); // PUT
+    delete form.dataset.editingId;                    // trở lại chế độ thêm mới
+  } else {
+    await addCourse(data); // POST như ví dụ 1
+  }
+  render(await getCourses()); // re-render sau mutation
+  form.reset();
+});
 ```
+
+Điểm cần nhớ: `PUT` thay **toàn bộ** object (bỏ trống field = mất data cũ trên server); muốn chỉ đổi vài field dùng `PATCH` với `JSON.stringify` object chứa đúng field đó. Sau PUT luôn re-render hoặc load lại list — đừng mò sửa DOM khi server chưa xác nhận.
 
 ## 🔬 So sánh với alternatives
 

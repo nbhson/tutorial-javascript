@@ -238,7 +238,7 @@ async function loadData(url) {
       </div>
     `).join('');
   } catch (err) {
-    container.innerHTML = '<p class="error">加载失败，请重试。</p>';
+    container.innerHTML = '<p class="error">Tải thất bại, vui lòng thử lại.</p>';
   }
 }
 ```

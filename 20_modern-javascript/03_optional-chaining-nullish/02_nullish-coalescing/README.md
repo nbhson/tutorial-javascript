@@ -30,7 +30,7 @@ const result = (a && b) ?? c;
 
 ### Bẫy 2: Không thay thế || cho mọi trường hợp
 ```js
-// Nếu muốn bỏ TẤT CẢ falsy (包括 0, "", false) --> dùng ||
+// Nếu muốn bỏ TẤT CẢ falsy ((bao gồm 0, ""), false) --> dùng ||
 const input = "" || "default"; // "default" <-- có thể đúng hoặc sai tùy ngữ cảnh
 const input = "" ?? "default"; // "" <-- giữ empty string hợp lệ
 ```
@@ -62,7 +62,7 @@ const limit = config.limit ?? 100; // giữ 0 nếu config.limit = 0
 const city = user?.address?.city ?? "Chưa cập nhật";
 const theme = settings?.ui?.theme ?? "light";
 
-//实际应用: API response handling
+// Ứng dụng thực tế: API response handling
 const response = await fetch("/api/user");
 const data = await response.json();
 const displayName = data?.user?.display_name ?? data?.user?.name ?? "Anonymous";

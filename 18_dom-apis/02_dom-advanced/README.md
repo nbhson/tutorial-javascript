@@ -279,7 +279,7 @@ const state = new Proxy({ count: 0, name: 'App' }, {
 - **Shadow DOM**: prefer `mode: 'open'` for debuggability; use `::slotted()` for styled projected content.
 - **Virtual DOM**: ensure stable `key` in lists for efficient diffing; avoid unnecessary re-renders.
 - **Proxy Reactivity**: wrap only top-level state; use shallow proxies for large nested objects.
-- **Combination**: Virtual DOM for app-level state, Shadow DOM for component encapsulation —各司其职.
+- **Combination**: Virtual DOM for app-level state, Shadow DOM for component encapsulation — mỗi cái đảm nhận một vai trò.
 - **Test in target browsers**: Shadow DOM support varies (all modern browsers except IE).
 - **Accessibility**: Shadow DOM accessible content still needs ARIA attributes inside shadow.
 - **Bundle size**: Shadow DOM + Custom Elements ~5KB minified; Virtual DOM frameworks ~30-100KB.

@@ -97,7 +97,7 @@ const instance = new ClassName(arg1, arg2);
 5. **Dễ debug** — stack trace rõ ràng hơn constructor pattern.
 6. **IDE support** — auto-complete, type checking (với TypeScript).
 7. **Extension dễ** — `extends` cho inheritance rõ ràng.
-8. **Standard** — ES6+, supported在所有现代浏览器.
+8. **Standard** — ES6+, supported trên tất cả trình duyệt hiện đại.
 
 ## ⚠️ Bẫy thường gặp & Hạn chế
 
@@ -153,7 +153,7 @@ class Person {
   constructor(name) { this.name = name; }
 }
 const p = Person("Alice"); // ❌ quên new — this = globalThis
-console.log(window.name); // "Alice" —污染 global scope
+console.log(window.name); // "Alice" — làm bẩn global scope
 ```
 
 ## 💡 Khi nào dùng — Tình huống thực tế

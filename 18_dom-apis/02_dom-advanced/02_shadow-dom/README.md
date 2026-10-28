@@ -14,7 +14,7 @@ Mục tiêu: **encapsulation (đóng gói)** — build UI component **tái sử 
 
 | Mode | Đặc điểm |
 |---|---|
-| `open` | `host.shadowRoot` truy cập được từ bên ngoài —便于 debug |
+| `open` | `host.shadowRoot` truy cập được từ bên ngoài — thuận tiện cho debug |
 | `closed` | `host.shadowRoot` trả về `null` — encapsulation strict hơn |
 
 **Lưu ý quan trọng**: `closed` mode không tuyệt đối — vẫn có thể leak qua `inspect()` trong DevTools. Đây là security qua obscurity, không phải encryption.

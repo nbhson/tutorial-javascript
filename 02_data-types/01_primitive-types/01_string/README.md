@@ -42,7 +42,7 @@ console.log("Path: C:\\Users\\name"); // escaped backslash
 var fullName_4 = 'Sơn Nguyễn';
 console.log(fullName_4.length); // 10
 
-// Chú ý: `.length` đếm theo UTF-16 code units — ký tự Unicode phức tạp (emoji,某些 characters) có thể tính thành 2
+// Chú ý: `.length` đếm theo UTF-16 code units — ký tự Unicode phức tạp (emoji,một số characters) có thể tính thành 2
 console.log("😀".length);        // 2 — emoji là surrogate pair
 console.log("😀".length === 1);  // false
 // Dùng `[..."😀"].length` hoặc `Array.from("😀").length` để đếm đúng code points

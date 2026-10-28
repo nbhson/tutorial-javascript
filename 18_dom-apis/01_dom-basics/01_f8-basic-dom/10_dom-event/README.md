@@ -234,7 +234,7 @@ list.addEventListener('click', (e) => {
 ## 📊 Performance & Best Practices
 
 - **Prefer `addEventListener` over `onclick`** — multiple handlers, removable, cleaner.
-- **Use `{ passive: true }` cho scroll/touch** —告诉 browser handler không preventDefault → optimize.
+- **Use `{ passive: true }` cho scroll/touch** — báo cho browser biết handler không preventDefault → optimize.
 - **Use `{ once: true }` cho one-time handlers** — tự cleanup, tránh leak.
 - **Event delegation khi có nhiều similar elements** — 1 listener thay N listeners.
 - **Store handler reference** — cần `removeEventListener` → lưu function vào biến, không dùng anonymous.

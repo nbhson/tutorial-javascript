@@ -24,7 +24,7 @@ const result = boundFn(argN, argN+1, ...);
 
 | Tham số | Bắt buộc? | Ý nghĩa |
 |---------|-----------|---------|
-| `thisArg` | ✅ | Object sẽ成为 `this` bên trong hàm |
+| `thisArg` | ✅ | Object sẽ trở thành `this` bên trong hàm |
 | `arg1, arg2, ...` | ❌ | Các đối số cố định, ghép trước khi gọi |
 
 ###.return value

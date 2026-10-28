@@ -358,7 +358,7 @@ main();
 | Phương án | Ưu điểm | Nhược điểm | Phù hợp khi |
 |---|---|---|---|
 | `setTimeout` | Native, đơn giản | Blocking dialog, approximate timing | Simple delay |
-| `setInterval` | Lặp lại tự động | Cần clear手动, drift over time | Periodic tasks |
+| `setInterval` | Lặp lại tự động | Cần clear thủ công, drift over time | Periodic tasks |
 | `requestAnimationFrame` | Sync với screen refresh | Chỉ 60fps max, browser only | Animations |
 | Web Workers | Background thread | Complex communication | CPU-heavy tasks |
 | `async/await` + Promise | Clean syntax | Requires Promise wrapper | Modern async code |

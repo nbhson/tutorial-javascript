@@ -78,7 +78,7 @@ Engine tự ép kiểu trong 4 bối cảnh chính:
 | 1 | **Coercion làm code "kỳ lạ"** | `"5" + 3` khác `"5" - 3` dù cùng toán hạng | Hiểu rõ coercion rules theo toán tử |
 | 2 | **`+` quyết định theo string presence** | Có string → concat, không có → add | Nhìn vào toán hạng đầu tiên để đoán |
 | 3 | **`==` ép kiểu phức tạp** | `0 == false` → true, `"" == 0` → true | Dùng `===` trừ khi chủ đích dùng `==` |
-| 4 | **Đọc code có coercion khó cho新人** | Junior dev khó đoán kết quả implicit | Thêm comment giải thích intent |
+| 4 | **Đọc code có coercion khó cho người mới** | Junior dev khó đoán kết quả implicit | Thêm comment giải thích intent |
 
 ## 💡 Khi nào dùng — Tình huống thực tế
 

@@ -94,7 +94,7 @@ window.addEventListener("load", () => {
 ### Input vs Change — khác biệt quan trọng
 ```js
 input.addEventListener('input', (e) => {
-  // Fire每一次 keystroke — real-time
+  // Fire mỗi lần keystroke — real-time
   console.log('input:', e.target.value);
 });
 
@@ -145,7 +145,7 @@ input.addEventListener('focusin', () => console.log('input focusin'));
 4. **Resize responsive** — `resize` event + debounce.
 5. **Form real-time validation** — `input` event trên mỗi field.
 6. **Track page unload** — `beforeunload` để warn unsaved changes.
-7. **Hash-based SPA routing** — `hashchange` event监听 URL fragment.
+7. **Hash-based SPA routing** — `hashchange` event lắng nghe URL fragment.
 8. **Initialize after DOM ready** — `DOMContentLoaded` cho DOM manipulation.
 
 ## 🎯 Ví dụ minh họa — Từ cơ bản đến nâng cao

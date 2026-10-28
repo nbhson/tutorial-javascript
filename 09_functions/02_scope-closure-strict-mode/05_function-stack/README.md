@@ -157,7 +157,7 @@ caller();
    console.log("3");
    // Output: 1 → 3 → 2 (callback chạy sau sync code, khi stack empty)
    ```
-7. **Stack trace bị truncate** trong một số environment — deep recursion只显示 top frames.
+7. **Stack trace bị truncate** trong một số environment — deep recursionchỉ hiển thị top frames.
 
 ## 💡 Khi nào dùng
 
@@ -365,7 +365,7 @@ level1();
 - **Giới hạn recursion depth** — nếu > 1000, convert to iterative hoặc dùng tail recursion (không được JS optimize).
 - **Dùng `console.trace()`** khi debug gọi hàm — hiểu flow, identify unexpected calls.
 - **Profile call stack** trong DevTools — Performance tab → Call Tree — identify hot functions.
-- **Avoid deep nesting** — max 2-3层级 function calls cho readability và performance.
+- **Avoid deep nesting** — max 2-3 cấp function calls cho readability và performance.
 - **Use tail-call optimization** (theoretical) — viết recursive function dạng tail call, mặc dù JS engines chưa optimize.
 - **Understand async call stack** — callbacks không nằm trên stack cùng lúc, chúng enqueue vào queue.
 - **Monitor stack size** trong production — error boundary, retry logic cho deep recursion.
@@ -377,7 +377,7 @@ level1();
 - ✅ Nên giới hạn recursion depth < 1000 — convert to iterative khi cần.
 - ✅ Nên hiểu scope chain để debug closure và variable lookup bugs.
 - ❌ Không nên đệ quy không có base case — stack overflow guaranteed.
-- ❌ Không nên nest function calls quá 3层级 — khó debug, maintain.
+- ❌ Không nên nest function calls quá 3 cấp — khó debug, maintain.
 - ❌ Không nên dùng `console.trace()` trong production hot path — performance hit.
 
 ## 🔗 Liên kết chéo

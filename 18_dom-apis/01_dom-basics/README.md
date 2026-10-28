@@ -127,7 +127,7 @@ el.removeEventListener('click', handler);
 4. **Làm foundation để hiểu các khái niệm nâng cao** ở `02_dom-advanced` (Shadow DOM, Virtual DOM, reactivity).
 5. **Viết script tự động hóa trang** — greasemonkey/userjs style.
 6. **Prototype nhanh** tính năng UI mà không muốn cài framework.
-7. **Debug issue CSS/布局** — inspect DOM tree qua DevTools Elements panel.
+7. **Debug issue CSS/layout** — inspect DOM tree qua DevTools Elements panel.
 8. **Tích hợp third-party widget** — inject DOM vào trang có sẵn.
 
 ## 🎯 Ví dụ minh họa — Từ cơ bản đến nâng cao

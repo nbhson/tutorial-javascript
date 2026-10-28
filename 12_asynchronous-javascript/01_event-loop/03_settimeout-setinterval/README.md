@@ -50,7 +50,7 @@ clearInterval(intervalId);
 2. **Dùng `setTimeout`** chạy trễ sau khi sự kiện hiện tại xử lý xong.
 3. **`setInterval`** tiện cho đồng hồ, đếm ngược, polling nhẹ.
 4. **Kết hợp với `clearTimeout`/`clearInterval`** kiểm soát vòng lặp chính xác.
-5. **Debouncing** — delay执行 cho đến khi user stop typing.
+5. **Debouncing** — delay thực thi cho đến khi user stop typing.
 6. **Throttling** — giới hạn tần suất chạy function.
 7. **Animation frames** — thay thế `setInterval` bằng `requestAnimationFrame`.
 8. **Retry logic** — retry request sau N giây khi fail.

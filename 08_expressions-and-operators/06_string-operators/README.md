@@ -155,7 +155,7 @@ console.log(s); // "hi there"
 
 ### Ví dụ 2: Thứ tự ảnh hưởng kết quả
 ```js
-// Thứ tự đánh giá从左 sang phải
+// Thứ tự đánh giá từ trái sang phải
 console.log(1 + 2 + "3"); // "33" — (1+2)="3", then "3"+"3"="33"
 console.log("1" + 2 + 3); // "123" — ("1"+2)="12", then "12"+3="123"
 console.log(1 + "2" + 3); // "123" — (1+"2")="12", then "12"+3="123"

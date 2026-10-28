@@ -13,14 +13,14 @@ Khác với SameValue (`Object.is`): **SameValueZero coi `-0 === +0` là `true`*
 ### Thuật toán SameValueZero (ECMA-262 §7.2.14)
 
 ```
-1. Nếu x是同 Type và y是同 Type:
+1. Nếu x cùng kiểu (Type) và y cùng kiểu (Type):
    a. Number:
       - x là NaN và y là NaN → true
       - x là +0 và y là -0, HOẶC x là -0 và y là +0 → true  ← KHÁC SameValue
       - x === y → true
       - otherwise → false
    b. Khác Number → same as SameValue
-2. Nếu不同类型 → false
+2. Nếu khác kiểu (type) → false
 ```
 
 ## 📐 So sánh 3 thuật toán

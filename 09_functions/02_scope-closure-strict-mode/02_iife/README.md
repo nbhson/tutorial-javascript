@@ -372,7 +372,7 @@ console.log(LibB.name); // "Library B"
 
 ### Ví dụ 10: IIFE — security sandbox
 ```js
-// IIFE tạo sandbox — cách thức hoạt động của一些 JS sandbox tools
+// IIFE tạo sandbox — cách thức hoạt động của một số JS sandbox tools
 const sandbox = (function() {
   const dangerous = {
     eval: eval,
@@ -417,7 +417,7 @@ console.log(sandbox("window.location")); // error (no window in Function scope)
 - IIFE return value assigned to variable — variable holds reference to returned object, not the IIFE scope.
 
 **Best practices**:
-- **Luôn có `;` trước IIFE** —预防 script concatenation issues.
+- **Luôn có `;` trước IIFE** — phòng ngừa script concatenation issues.
 - **Dùng `()` wrap** — clear nhất, readable nhất, recommended pattern.
 - **Assign result to named variable** — `const module = (function(){ ... })();` — easier to debug.
 - **Prefer ES modules** cho code mới — IIFE là legacy pattern, ES modules cleaner và có tooling support.

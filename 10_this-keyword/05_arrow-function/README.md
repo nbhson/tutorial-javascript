@@ -106,7 +106,7 @@ btn.addEventListener("click", () => {
 3. **React/Vue component callbacks** — `onClick={() => this.handleSubmit()}`.
 4. **Higher-order functions** — `compose`, `curry` không cần `this`.
 5. **One-liner expressions** — `arr.sort((a, b) => a - b)`.
-6. **IIFE modern替代** — `(params => { ... })(values)` không cần function keyword.
+6. **IIFE hiện đại thay thế** — `(params => { ... })(values)` không cần function keyword.
 7. **Data transformation pipelines** — chuỗi `.map().filter().reduce()` sạch sẽ.
 
 ## 🎯 Ví dụ minh họa — Từ cơ bản đến nâng cao
@@ -215,7 +215,7 @@ console.log(calculator.run(1, 5)); // 10 (double)
 - **Arrow function nhẹ hơn** function thường — engine tối ưu tốt hơn cho callback pattern.
 - **Tránh arrow trong class fields** nếu không cần — có thể gây memory leak nếu subclass override.
 - **Luôn dùng arrow trong Promise chains** — `promise.then(() => ...)` giữ context đúng.
-- **Không bao giờ dùng arrow làm constructor hoặc object method** —违背设计意图.
+- **Không bao giờ dùng arrow làm constructor hoặc object method** — trái với ý đồ thiết kế.
 - **Dùng arrow trong React props** — `onClick={() => handler()}` hoặc arrow method field.
 
 ## 🔗 Liên kết chéo

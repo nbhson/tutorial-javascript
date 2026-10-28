@@ -96,7 +96,7 @@ document.body.appendChild(shadowHost);
 3. **Thiết kế giao diện ghép nối**: bảng điều khiển (Virtual DOM) + popup/badge thành phần riêng (Shadow DOM).
 4. **Gradual migration** — giữ widget cũ (Shadow DOM) bên trong app mới (Virtual DOM).
 5. **Third-party widget integration** — nhúng widget từ vendor mà không lo CSS conflict.
-6. **Design system distribution** — ship components как Web Components (Shadow DOM) cho nhiều frameworks.
+6. **Design system distribution** — ship components dưới dạng Web Components (Shadow DOM) cho nhiều frameworks.
 7. **E-commerce product page** — Virtual DOM cho product config, Shadow DOM cho review widget từ third-party.
 
 ## 🎯 Ví dụ minh họa

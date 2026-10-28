@@ -305,7 +305,7 @@ console.log([...skipTake([1,2,3,4,5,6,7,8], 2, 3)]); // [3, 4, 5]
 
 | Cách tiếp cận | Ưu điểm | Nhược điểm | Khi nào chọn |
 |---|---|---|---|
-| **Array传统产业** | Đơn giản, quen thuộc | Tốn RAM, phải biết trước kích thước | Dữ liệu nhỏ, fixed |
+| **Array truyền thống** | Đơn giản, quen thuộc | Tốn RAM, phải biết trước kích thước | Dữ liệu nhỏ, fixed |
 | **Iterator thủ công** | Kiểm soát 100%, không cần generator | Nhiều boilerplate, dễ lỗi `done` | Custom traversal phức tạp |
 | **Generator `[Symbol.iterator]()`** | Code gọn, lazy, chuẩn | Một chiều, không seek | Hầu hết trường hợp tùy chỉnh |
 | **Array methods (map/filter)** | Chức năng phong phú | Tạo array mới mỗi lần | Dữ liệu nhỏ, cần chaining |

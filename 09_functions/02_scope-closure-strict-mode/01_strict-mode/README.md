@@ -399,7 +399,7 @@ console.log(typeof Infinity);  // "infinity"
 - ✅ Nên dùng ESLint `strict: "error"` enforce project-wide.
 - ✅ Nên test strict mode behavior trước khi deploy legacy code.
 - ❌ Không nên đặt `"use strict";` sau code — không có tác dụng cho phần trước.
-- ❌ Không nên依靠 non-strict mode — deprecated, future browsers may remove support.
+- ❌ Không nên dựa vào non-strict mode — deprecated, future browsers may remove support.
 - ❌ Không nên mixed strict/non-strict in same file — inconsistent behavior.
 
 ## 🔗 Liên kết chéo

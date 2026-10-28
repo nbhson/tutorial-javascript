@@ -104,7 +104,7 @@ ctx[key] = this;
 // ❌ Không xóa property tạm
 ctx._fn = this;
 ctx._fn(...args);
-// ctx bây giờ có property _fn —污染 object
+// ctx bây giờ có property _fn —làm bẩn (pollute) object
 // ✅ Luôn delete sau khi dùng
 delete ctx._fn;
 ```
@@ -277,7 +277,7 @@ console.log(double(3, 5)); // 30 (2 * 3 * 5) — boundArgs=[2], callArgs=[3,5]
 
 ## 🔬 So sánh với alternatives
 
-| Cách | Độ tin cậy |维护难度 | Use case |
+| Cách | Độ tin cậy | Khó bảo trì | Use case |
 |------|-----------|---------|----------|
 | Native built-in | ✅ Cao | ❌ Không sửa được | Production code |
 | Polyfill (custom) | ⚠️ Trung bình | ✅ Sửa được | Legacy support, education |

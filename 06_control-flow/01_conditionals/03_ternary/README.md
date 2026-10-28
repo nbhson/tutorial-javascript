@@ -41,7 +41,7 @@ Ternary **rút gọn** thành 1 dòng, cùng ý nghĩa, cùng kết quả. Đi�
 |---|---|---|
 | Thân có `{}` | `(a, b) => { return a + b; }` | Cần `return` rõ ràng |
 | Thân 1 biểu thức | `(a, b) => a + b` | Implicit return — tự động return |
-| Trả về object | `(a, b) => ({ a, b })` | Bắt buộc bọc `()` — `{}`会被当成函数体 |
+| Trả về object | `(a, b) => ({ a, b })` | Bắt buộc bọc `()` — `{}` sẽ bị hiểu là phần thân hàm (function body) |
 | Một tham số | `x => x * 2` | Có thể bỏ `()` |
 | Không tham số | `() => 42` | Bắt buộc có `()` |
 
@@ -263,7 +263,7 @@ console.log(value); // 0
 **Quy tắc coding**:
 - Dùng ternary khi **cả hai nhánh đều là expression ngắn** (1 giá trị, 1 hàm call đơn).
 - Chuyển sang `if/else` khi **nhánh có nhiều câu lệnh** hoặc **logic phức tạp**.
-- Giới hạn **ternary lồng tối đa 2层级** — quá nhiều = khó đọc.
+- Giới hạn **ternary lồng tối đa 2 cấp** — quá nhiều = khó đọc.
 - Luôn **bọc object trong `()`** khi implicit return: `() => ({ key: value })`.
 - Tránh **side-effect trong nhánh** — ternary nên pure (không gây tác dụng phụ).
 - Dùng `??` (nullish coalescing) thay ternary cho **mặc định null/undefined** — ngắn gọn hơn.

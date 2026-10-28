@@ -263,3 +263,61 @@ async function getCommentsAndUsers() {
 - **Xem thêm:** `12_asynchronous-javascript/02_callbacks-promises/02_async-await` — async/await syntax
 - **Xem thêm:** `12_asynchronous-javascript/02_callbacks-promises/04_promise-chain` — promise chaining
 - **Xem thêm:** `12_asynchronous-javascript/02_callbacks-promises/07_callback-hell` — callback hell solutions
+
+## 🆕 ES2025 — Promise.try() và Promise.withResolvers()
+
+### `Promise.try()` — thực thi một function như promise
+
+Chuẩn hóa function có thể throw lỗi **sync** hoặc trả promise — mọi lỗi đều đi vào `.catch()`. Đạt Stage 4 (10/2024), chính thức trong **ES2025**.
+
+**Browser support:** Chrome 122+, Firefox 128+, Safari 17.5+, Node 22+.
+
+```js
+// ❌ Trước: nếu getUser throw lỗi SYNC → .catch() KHÔNG bắt được
+function getUser(id) { return JSON.parse(rawUser); } // có thể throw sync
+Promise.resolve(getUser(1)).then(handle).catch(handleErr);
+// lỗi sync văng ra ngoài chain!
+
+// ✅ ES2025: Promise.try — mọi lỗi sync/async đều vào .catch()
+Promise.try(getUser, 1)              // truyền arguments trực tiếp
+  .then(user => processUser(user))
+  .catch(err => handleError(err));   // bắt được CẢ lỗi sync
+
+// Dạng arrow khi cần closure
+Promise.try(() => fetch("/api").then(r => r.json()))
+  .then(console.log)
+  .catch(console.error);
+```
+
+> 📖 MDN: [Promise.try()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/try)
+
+### `Promise.withResolvers()` — tạo promise với resolve/reject tách riêng
+
+Cách hiện đại thay cho pattern khai báo biến bên ngoài executor (ES2024, thường được nhắc cùng ES2025).
+
+**Browser support:** Chrome 119+, Firefox 121+, Safari 17.4+, Node 22+.
+
+```js
+// ❌ Trước: rườm rà
+let resolveFn, rejectFn;
+const p1 = new Promise((resolve, reject) => {
+  resolveFn = resolve;
+  rejectFn = reject;
+});
+
+// ✅ Mới: một dòng, dùng được ở scope ngoài
+const { promise, resolve, reject } = Promise.withResolvers();
+
+// Use case kinh điển: resolve từ event listener
+document.getElementById("submit-btn")
+  .addEventListener("click", () => resolve("submitted"));
+setTimeout(() => reject(new Error("Timeout!")), 5000);
+
+promise
+  .then(value => console.log(value))
+  .catch(err => console.error(err.message));
+```
+
+> 📖 MDN: [Promise.withResolvers()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers)
+>
+> Xem thêm tổng hợp: `22_es2025-features/README.md`

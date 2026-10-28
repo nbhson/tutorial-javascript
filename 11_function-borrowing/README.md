@@ -40,7 +40,7 @@ result = newFn(arg3, arg4)  // arg1, arg2 đã được chốt
 | Truyền đối số | Danh sách | Mảng | Danh sách (optional) |
 | Trả về | Kết quả hàm | Kết quả hàm | Hàm mới |
 | Dùng cho callback | ❌ | ❌ | ✅ |
-| Dùng cho inheritance | ✅ | ✅ | ⚠️ Không推荐 |
+| Dùng cho inheritance | ✅ | ✅ | ⚠️ Không khuyến khích |
 | Dùng cho borrowing | ✅ | ✅ | ✅ |
 
 ## ✅ Điểm mạnh — Tại sao nên dùng

@@ -104,7 +104,7 @@ console.log(empty[0]);     // 1 — hoạt động vì empty có property numeri
 4. **Mix-in pattern** — gán method của class này vào instance class khác.
 5. **Test unit** — mock `this` để test method không phụ thuộc state.
 6. **Function pipeline** — gọi cùng function với different contexts.
-7. **Data transformation** —借用 array method cho custom collections.
+7. **Data transformation** — mượn array method cho custom collections.
 
 ## 🎯 Ví dụ minh họa — Từ cơ bản đến nâng cao
 

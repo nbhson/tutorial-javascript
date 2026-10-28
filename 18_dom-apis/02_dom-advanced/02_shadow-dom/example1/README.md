@@ -77,7 +77,7 @@ shadow.innerHTML = `
 ## ✅ Điểm mạnh
 
 1. **Style bên trong không rò rỉ ra ngoài** — CSS global không ảnh hưởng, component tự chứa đầy đủ style.
-2. **HTML/CSS bên trong không bị CSS global ghi đè** (trừ `::part` / `::slotted`) — encapsulation是真的.
+2. **HTML/CSS bên trong không bị CSS global ghi đè** (trừ `::part` / `::slotted`) — encapsulation là thật.
 3. **Basis của Web Components** — component tự chứa đầy đủ markup + style + behavior.
 4. **Reusable across projects** — copy component sang project khác, style không xung đột.
 5. **Performance** — browser có thể optimize style resolution tốt hơn với scoped CSS.

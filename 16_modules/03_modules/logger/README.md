@@ -43,7 +43,7 @@ export function func_3(msg) {
 
 ### File: `logger.js`
 ```js
-import { TYPE_LOG } from './const.js';  // import named from同级 file
+import { TYPE_LOG } from './const.js';  // import named from file cùng cấp
 
 function loggerFunction(log, type = TYPE_LOG) {
   console[type](log);                    // dynamic method call: console['log'](log)
@@ -157,13 +157,13 @@ newLogger("Sơn Nguyên", constant.TYPE_ERROR); // console.error("Sơn Nguyên")
 func_1("New message");                        // console.warn("func 1: New message")
 ```
 
-### Ví dụ 2: Barrel file re-export两种写法
+### Ví dụ 2: Barrel file re-export hai cách viết
 ```js
 // logger/index.js
 export { default } from './logger.js';           // cách 1: re-export default
 export { default as newLogger } from './logger.js'; // cách 2: re-export có alias
 
-//两种 export đều khả dụng từ consumer
+// hai export đều khả dụng từ consumer
 import loggerFunc from './logger/index.js';  // nhận default
 import { newLogger } from './logger/index.js'; // nhận named alias
 ```

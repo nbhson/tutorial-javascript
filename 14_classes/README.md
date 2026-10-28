@@ -362,7 +362,7 @@ class Circle extends Shape {
 - **Tránh class quá sâu** — kế thừa > 3 level khó bảo trì, dùng composition thay.
 - **Static methods** cho utility không cần instance state.
 - **Private fields `#`** — enforce encapsulation, nhưng không compile-time enforced (reflect có thể access).
-- **Use `instanceof`** cẩn thận —跨 iframe/window khác nhau có thể sai.
+- **Use `instanceof`** cẩn thận — cross-iframe/window khác nhau có thể sai.
 
 ## 🔗 Liên kết chéo
 

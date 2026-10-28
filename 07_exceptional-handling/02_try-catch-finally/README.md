@@ -156,7 +156,7 @@ try {
    try {
      dangerousCode();
    } catch (e) {
-     // Im lặng吞 lỗi — rất tệ!
+     // Im lặngnuốt lỗi — rất tệ!
    }
    ```
 
@@ -361,7 +361,7 @@ function processWithCleanup(data) {
 - Dùng `instanceof` để phân biệt loại lỗi.
 - **Re-throw** lỗi không biết xử lý — đừng bắt mọi thứ.
 - Dùng `finally` cho **dọn dẹp bắt buộc** (close connection, release lock, clear timer).
-- Giới hạn **nested try/catch** — tối đa 2层级.
+- Giới hạn **nested try/catch** — tối đa 2 cấp.
 - Dùng **ES2019 `catch` không parameter** khi không cần error object.
 - Dùng **Error cause** (ES2022) để giữ chain lỗi: `new Error("wrapper", { cause: inner })`.
 - Tránh **throw trong finally** — sẽ che lấp lỗi gốc.
@@ -371,7 +371,7 @@ function processWithCleanup(data) {
 - ✅ Nên có finally khi cần cleanup.
 - ✅ Nên phân loại lỗi bằng instanceof.
 - ❌ Không swallow lỗi im lặng.
-- ❌ Không nest quá 2层级.
+- ❌ Không nest quá 2 cấp.
 - ❌ Không throw trong finally.
 
 ## 🔗 Liên kết chéo

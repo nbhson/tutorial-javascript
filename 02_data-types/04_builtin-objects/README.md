@@ -42,7 +42,6 @@ Mỗi bài tập trung vào một built-in object quan trọng nhất:
 ```
 02_data-types/04_builtin-objects/
 ├── README.md                          ← bài tổng quan này
-├── 00_overview.md                     ← overview bổ sung (optional)
 ├── 01_math/
 │   ├── README.md
 │   ├── app.js

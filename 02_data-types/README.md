@@ -228,3 +228,52 @@ console.log(checkType("hi"));       // "string"
 - Xem thêm: `02_data-types/03_type-casting-and-coercion/` — ép kiểu tường minh/ngầm
 - Xem thêm: `04_equality-comparisons/` — `==` vs `===` vs `Object.is`
 - Tài liệu: [MDN — Data types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures), [javascript.info/types](https://javascript.info/types)
+
+## 🆕 ES2025 & Iterables hiện đại
+
+Một số tính năng mới liên quan đến kiểu dữ liệu / built-in objects (tổng hợp chi tiết: `22_es2025-features/README.md`):
+
+### Iterator Helpers — ES2025 (Chrome 122+, Firefox 131+, Safari 18.4+)
+
+Method functional **lazy** trực tiếp trên `Iterator.prototype` — chi tiết đầy đủ ở `15_iterators-and-generators/`.
+
+```js
+// Chuỗi vô hạn vẫn an toàn nhờ lazy evaluation
+function* naturalNumbers() { let n = 0; while (true) yield n; }
+
+const result = naturalNumbers()
+  .filter(n => n % 2 === 0)
+  .map(n => n * n)
+  .take(5)
+  .toArray();
+console.log(result); // [0, 4, 16, 36, 64]
+```
+
+> 📖 MDN: [Iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator)
+
+### Set Methods — phép toán tập hợp (Chrome 122+, Firefox 127+, Safari 17+)
+
+```js
+const a = new Set([1, 2, 3]);
+const b = new Set([3, 4, 5]);
+
+a.union(b);            // Set {1, 2, 3, 4, 5}
+a.intersection(b);      // Set {3}
+a.difference(b);        // Set {1, 2}
+a.symmetricDifference(b); // Set {1, 2, 4, 5}
+a.isSubsetOf(b);        // false
+a.isSupersetOf(b);      // false
+a.isDisjointFrom(b);    // false
+```
+
+> 📖 MDN: [Set](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set)
+
+### RegExp.escape() (Chrome 123+, Firefox 127+)
+
+Escape chuỗi an toàn trước khi nhúng vào `new RegExp()` — chi tiết ở `02_data-types/04_builtin-objects/03_regexp/`.
+
+```js
+const userInput = "C++ (2025)";
+const re = new RegExp(RegExp.escape(userInput)); // escape toàn bộ syntax chars
+console.log(re.test("C++ (2026)")); // false — match literal chính xác
+```

@@ -15,7 +15,7 @@ Một **operator** (toán tử) là ký hiệu thực hiện thao tác lên các
 | `05_unary/` | Toán tử một ngôi | `typeof`, `void`, `delete`, `+`, `-`, `!` | ⭐⭐⭐ Phổ biến |
 | `06_string-operators/` | Nối chuỗi | `+`, `+=`, `.concat()` | ⭐⭐⭐⭐ Phổ biến |
 
-**Quan điểm then chốt**: hiểu rõ operator giúp bạn đọc code của người khác (npm packages, thư viện) không lúng túng, và viết code đúng意图 — không bị bẫy bởi implicit type coercion hay operator precedence.
+**Quan điểm then chốt**: hiểu rõ operator giúp bạn đọc code của người khác (npm packages, thư viện) không lúng túng, và viết code đúng ý đồ (intent) — không bị bẫy bởi implicit type coercion hay operator precedence.
 
 ## 📐 Cấu trúc / Cú pháp
 
@@ -56,8 +56,8 @@ Một **operator** (toán tử) là ký hiệu thực hiện thao tác lên các
 
 ### Nhóm 4: Logical (Logic) — `01_operators/5_toan-tu-logical.js`
 ```js
-&&  // AND — short-circuit: nếu trái falsy thì trả trái, không評価右
-||  // OR  — short-circuit: nếu trái truthy thì trả trái, không評価右
+&&  // AND — short-circuit: nếu trái falsy thì trả trái, không đánh giá vế phải
+||  // OR  — short-circuit: nếu trái truthy thì trả trái, không đánh giá vế phải
 !   // NOT  — phủ định, ép thành boolean
 ```
 
@@ -295,7 +295,7 @@ console.log(typeof ("hi" === "string")); // "boolean" ← khác!
 
 ## 🔬 So sánh với alternatives
 
-| Toán tử | Alternatives |所以当 |
+| Toán tử | Alternatives | Khi nào |
 |---|---|---|
 | `===` | `==` | Luôn dùng `===` — tránh bẫy ép kiểu |
 | `**` | `Math.pow()` | `**` ngắn gọn hơn, ES2016 |

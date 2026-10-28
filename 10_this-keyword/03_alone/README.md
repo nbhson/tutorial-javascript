@@ -190,7 +190,7 @@ console.log(secretKey);    // "abc123" — biến toàn cục ẩn
 - **Luôn bật strict mode** — tránh `this` vô tình gán vào global, dễ debug hơn.
 - **Không dùng `this` trong global scope để gán biến** — gây naming clash, khó maintain.
 - **Kiểm tra `typeof window`** khi viết code chạy đa môi trường.
-- **Dùng `globalThis` thay cho `window`** trong library để兼容 cả Node.
+- **Dùng `globalThis` thay cho `window`** trong library đểtương thích cả Node.
 
 ## 🔗 Liên kết chéo
 

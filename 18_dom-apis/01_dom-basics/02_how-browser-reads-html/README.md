@@ -29,7 +29,7 @@ Mỗi lần JS đổi DOM/CSSOM, trình duyệt có thể phải:
 2. **Repaint (Paint)** — vẽ lại pixel.
 3. **Composite** — sắp xếp lại layers.
 
-Reflow là昂贵 nhất — một thay đổi nhỏ có thể trigger reflow cả subtree.
+Reflow làtốn kém nhất — một thay đổi nhỏ có thể trigger reflow cả subtree.
 
 ## 📐 Cấu trúc / Cú pháp
 
@@ -147,7 +147,7 @@ console.log({
 
 ### Ví dụ 3: Batch DOM changes để tránh nhiều reflow
 ```js
-// ❌ BAD — mỗi lần append触发 reflow
+// ❌ BAD — mỗi lần append kích hoạt reflow
 const ul = document.querySelector('ul');
 for (let i = 0; i < 1000; i++) {
   const li = document.createElement('li');

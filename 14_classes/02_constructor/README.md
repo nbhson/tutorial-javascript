@@ -149,7 +149,7 @@ class User {
   constructor(name) { this.name = name; }
 }
 const u = User("Alice"); // ❌ quên new
-console.log(window.name); // "Alice" —污染 global
+console.log(window.name); // "Alice" — làm bẩn global
 ```
 
 ## 💡 Khi nào dùng — Tình huống thực tế

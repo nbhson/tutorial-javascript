@@ -97,7 +97,7 @@ function getFirstName(obj) {
 3. **`Object.freeze` / thiết lập property động** có thể khóa shape, ngăn V8 tạo hidden class mới → performance drop.
 4. **Hiểu sâu V8 giúp viết code nhanh nhưng không nên "ép" tối ưu quá mức** để chống lại engine — đo bằng profiler trước khi can thiệp.
 5. **Micro-optimization có thể phản tác dụng** — viết code "hiệu quả" theo cách khác với engine expectation → deopt.
-6. **Machine code cache miss** — khi cùng function gọi với object shape khác nhau多次 → IC miss nhiều → chậm.
+6. **Machine code cache miss** — khi cùng function gọi với object shape khác nhau nhiều lần → IC miss nhiều → chậm.
 
 ## 💡 Khi nào dùng — Tình huống thực tế
 

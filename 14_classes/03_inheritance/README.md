@@ -129,7 +129,7 @@ class D extends C {} // quá sâu — khó maintain
 // Fix: dùng composition thay inheritance
 ```
 
-### Bẫy 4: `instanceof` có thể sai với跨 realm (iframe)
+### Bẫy 4: `instanceof` có thể sai với cross-realm (iframe)
 
 ```js
 // Trong iframe khác

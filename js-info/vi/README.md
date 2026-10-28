@@ -1,5 +1,7 @@
 # JavaScript.info — Toàn bộ bài học (175 articles)
 
+> ⚠️ js-info/ là **bản mirror javascript.info tiếng Việt — tài liệu tham khảo, không thuộc đánh số bài của khóa**. Xem `js-info/README.md`. Lộ trình chính của khóa là các thư mục có đánh số (00–23) bên ngoài thư mục này.
+
 > Mirror 1:1 từ https://javascript.info — cập nhật lần cuối: **2026-09-14**
 > Toàn bộ 175 bài leaf (không tính trang section) đã được fetch và chuyển sang Markdown, giữ nguyên ví dụ, hình ảnh, tasks & solutions.
 

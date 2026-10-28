@@ -13,7 +13,7 @@ Thao tác DOM thủ công rất lộn xộn: khó theo dõi trạng thái trư�
 Thuật toán diff cây cây với độ phức tạp O(n³) về lý thuyết, nhưng React và các library dùng **heuristic O(n)**:
 - **Chỉ so sánh cùng level** — không diff cross-level (element A không so với element B ở level khác).
 - **Type different → replace whole subtree** — nếu tag khác nhau (div → span), replace toàn bộ.
-- **Key-based list diff** — dùng `key` prop để identify individual items, tránh reorder diff浪费.
+- **Key-based list diff** — dùng `key` prop để identify individual items, tránh reorder diff lãng phí.
 - **Same type, different props → update props only** — không recreate element.
 
 Thư mục này có `example1/` — một **mini virtual-dom tự viết**:
@@ -36,7 +36,7 @@ const vNode = {
 };
 ```
 
-###核心函数
+### Hàm cốt lõi
 ```js
 // Tạo VNode
 function createVNode(tag, props, children) {
@@ -110,7 +110,7 @@ function updateCounter() {
 3. **Cần tách biết "dữ liệu → UI"** rõ ràng — model truyền thẳng vào render function.
 4. **Khi build multi-component app** — mỗi component trả về VNode, framework chỉ patch phần đổi.
 5. **Muốn tự viết một renderer tí hon** — chính là `example1/helper.js`.
-6. **Learning framework internals** — hiểu Virtual DOM giúp hiểu React/Vue工作机制.
+6. **Learning framework internals** — hiểu Virtual DOM giúp hiểu cơ chế hoạt động của React/Vue.
 7. **Progressive enhancement** — bắt đầu với vanilla, gradually add virtual layer.
 
 ## 🎯 Ví dụ minh họa — Từ cơ bản đến nâng cao

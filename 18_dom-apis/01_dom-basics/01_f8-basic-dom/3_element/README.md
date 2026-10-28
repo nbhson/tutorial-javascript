@@ -162,7 +162,7 @@ console.log(ids);
 // Tìm input email chưa valid
 const invalidEmails = document.querySelectorAll("input[type='email']:invalid");
 
-// Tìm tất cả link external (開新 tab)
+// Tìm tất cả link external (mở tab mới)
 const externalLinks = document.querySelectorAll("a[href^='http']:not([href*='example.com'])");
 
 // Tìm checkbox trong form có class 'settings'

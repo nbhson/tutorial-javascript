@@ -150,17 +150,17 @@ boxes.forEach(box => {
 // Performance tab: nhiều "Recalculate Style" + "Layout" bars liên tiếp
 ```
 
-### Ví dụ 5: Network瀑布图分析
+### Ví dụ 5: Network waterfall analysis
 ```
-Network tab → 看 waterfall:
-- DNS Lookup: 域名解析时间
-- Initial Connection: TCP连接时间
-- SSL: 加密握手时间
-- Wait (TTFB): 服务器响应时间
-- Content Download: 下载时间
-- Total: 总时间
+Network tab → xem waterfall:
+- DNS Lookup: thời gian phân giải tên miền
+- Initial Connection: thời gian kết nối TCP
+- SSL: thời gian handshake mã hóa
+- Wait (TTFB): thời gian server phản hồi
+- Content Download: thời gian tải về
+- Total: tổng thời gian
 
- otimizar: 减少TTFB (server optimization), 压缩内容 (gzip/brotli)
+ tối ưu: giảm TTFB (server optimization), nén nội dung (gzip/brotli)
 ```
 
 ### Ví dụ 6: Coverage tab — find unused code
@@ -189,7 +189,7 @@ DevTools → More tools → Coverage
 - **Repeat measurements**: chạy 2-3 lần, lấy trung bình — GC và cache ảnh hưởng số liệu.
 - **Use CPU throttling**: 4x slowdown simulate mobile device thực tế.
 - **Focus on long tasks**: task >50ms là nguyên nhân chính của jank — ưu tiên optimize những task này.
-- **Check Retainers path**: khi tìm leak, đừng只看 object size — xem retainer để biết ai giữ reference.
+- **Check Retainers path**: khi tìm leak, đừngchỉ nhìn object size — xem retainer để biết ai giữ reference.
 - **Use "Select DOM element" trong Allocation timeline**: click vào object trong timeline để see DOM node liên quan.
 - **Close other tabs**: khi record performance, đóng tab khác để giảm noise.
 - **Use Workbench/ snippets**: lưu code snippet trong Sources tab để tái hiện bug nhanh.

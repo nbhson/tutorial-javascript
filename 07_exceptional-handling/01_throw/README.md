@@ -294,8 +294,8 @@ try {
 - Thêm `code` tùy chỉnh vào Error để dễ xử lý programmatic.
 - Dùng **guard clause** — throw sớm, đừng để logic chạy với input sai.
 - **Re-throw** lỗi không biết cách xử lý — đừng swallow.
-- **Log lỗi** trong `catch` — im lặng吞 lỗi là nguyên nhân số 1 của production bugs.
-- Giới hạn **nested try/catch** — tối đa 2层级, quá sâu thì refactor.
+- **Log lỗi** trong `catch` — im lặng nuốt lỗi (swallow) là nguyên nhân số 1 của production bugs.
+- Giới hạn **nested try/catch** — tối đa 2 cấp, quá sâu thì refactor.
 
 ## 🔗 Liên kết chéo
 

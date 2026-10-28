@@ -327,7 +327,7 @@ console.log(sanitizeUser(rawUser));
 // <a href="javascript:void(0)" onclick="doSomething()">Click</a>
 // void(0) đảm bảo không navigate đi đâu cả
 
-// Trong JS纯:
+// Trong JS thuần:
 const noop = () => void console.log("this logs but returns undefined");
 noop(); // in "this logs but returns undefined" rồi return undefined
 ```

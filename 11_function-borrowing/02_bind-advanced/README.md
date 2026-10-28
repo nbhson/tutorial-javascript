@@ -252,7 +252,7 @@ getter(); // undefined (non-strict) hoặc throw (strict)
 
 ## 🔬 So sánh với alternatives
 
-| Cách | Partial application | Reusable |可读性 |
+| Cách | Partial application | Reusable | Dễ đọc |
 |------|--------------------|----------|--------|
 | `bind()` | ✅ | ✅ | Trung bình |
 | Arrow wrapper | ✅ | ⚠️ | Cao |

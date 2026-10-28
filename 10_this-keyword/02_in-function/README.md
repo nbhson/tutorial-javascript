@@ -144,7 +144,7 @@ function Person(name) {
 }
 
 const p = Person("Alice"); // ❌ quên new
-console.log(window.name);  // "Alice" — ôi trời, đã污染 global scope!
+console.log(window.name);  // "Alice" — ôi trời, đã làm bẩn global scope!
 ```
 
 ### Ví dụ 5: Strict mode + constructor — lỗi sớm hơn

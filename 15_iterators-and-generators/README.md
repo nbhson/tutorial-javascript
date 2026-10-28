@@ -8,7 +8,7 @@ Trong JavaScript, **Iterator** và **Generator** là hai cơ chế nền tảng 
 
 **Generator** (bậc cao) là một hàm đặc biệt khai báo bằng `function*` hoặc `async function*`. Khi gọi generator, nó **không chạy ngay thân hàm** — mà trả về một iterator object đặc biệt. Mỗi lần gọi `next()` trên iterator đó, code bên trong chạy đến câu lệnh `yield` tiếp theo, nhả ra giá trị rồi **dừng lại và ghi nhớ vị trí**. Lần `next()` sau tiếp tục từ đúng điểm dừng. Cơ chế này cho phép tạo các chuỗi vô hạn, pipeline xử lý dữ liệu tuần tự, hay state machine đơn giản.
 
-Mối quan hệ then chốt: generator **tự động cung cấp** iterator chuẩn, nên bạn几乎 không bao giờ cần tự viết object iterator thủ công nữa. Nhưng hiểu rõ iterator protocol vẫn quan trọng khi bạn muốn custom một class có khả năng `for...of`.
+Mối quan hệ then chốt: generator **tự động cung cấp** iterator chuẩn, nên bạn hầu như không bao giờ cần tự viết object iterator thủ công nữa. Nhưng hiểu rõ iterator protocol vẫn quan trọng khi bạn muốn custom một class có khả năng `for...of`.
 
 Trong repo này:
 - `01_generators/app.js` — ví dụ generator `idCreator()` tạo chuỗi số nguyên vô hạn.
@@ -146,7 +146,7 @@ for (const v of it) { if (v > 0.9) break; }
 1. **Tạo ID tự tăng vô hạn** — thay vì pre-generate mảng, dùng generator `function* uid() { let i = 0; while (true) yield ++i; }`.
 2. **Xử lý stream dữ liệu lớn** — đọc từng dòng file, từng trang API, không tải toàn bộ vào RAM.
 3. **Duyệt cấu trúc tùy chỉnh** — linked list, tree, graph — thêm `Symbol.iterator` để dùng `for...of`.
-4. **Finite-state machine** — game logic, workflow approval,每一步 yield một state rồi nhận trigger.
+4. **Finite-state machine** — game logic, workflow approval,mỗi bước yield một state rồi nhận trigger.
 5. **Data pipeline lazy** — `pipe(map, filter, take)(sourceGenerator)` — không tạo mảng trung gian.
 6. **Paginated API consumer** — `async function* pages(url) { let next = url; while (next) { const r = await fetch(next); yield r.data; next = r.nextPage; } }`
 7. **Tạo observable đơn giản** — kết hợp `yield*` với event listener để stream sự kiện DOM.
@@ -308,3 +308,76 @@ for (const c of chunk(data, 3)) {
 - Xem thêm: `16_modules/` — ESM module system, có `import`/`export` tĩnh liên quan đến module loading.
 - Xem thêm: `18_dom-apis/01_dom-basics/01_f8-basic-dom/7_node-property/` — duyệt DOM tree có thể áp dụng generator.
 - Xem thêm: `17_memory-management/` — generator object bị GC như thế nào khi không còn reference.
+
+## 🆕 ES2025 — Iterator Helpers (Baseline 2025)
+
+ES2025 chuẩn hóa các method functional **lazy** trên `Iterator.prototype` — không cần spread ra mảng trung gian, hoạt động an toàn với chuỗi vô hạn. Đã đạt **Baseline Newly available** (31/03/2025): Chrome 122+, Firefox 131+, Safari 18.4+, Node 22+.
+
+### Bảng method
+
+| Method | Chức năng | Lazy |
+|---|---|---|
+| `map(fn)` | Transform từng giá trị | ✅ |
+| `filter(fn)` | Giữ giá trị thỏa điều kiện | ✅ |
+| `take(n)` | Lấy tối đa n giá trị rồi đóng | ✅ |
+| `drop(n)` | Bỏ qua n giá trị đầu | ✅ |
+| `flatMap(fn)` | Transform + flatten 1 cấp | ✅ |
+| `reduce(fn, init)` | Gộp về 1 giá trị | eager |
+| `toArray()` | Thu thập thành mảng | eager |
+| `forEach(fn)` | Duyệt hết | eager |
+| `some(fn)` / `every(fn)` | Kiểm tra tồn tại / toàn bộ | dừng sớm |
+| `find(fn)` | Tìm giá trị đầu tiên thỏa | dừng khi thấy |
+| `Iterator.from(iterable)` | Bọc iterable thành Iterator object | ✅ |
+
+### Ví dụ minh họa
+
+```js
+// Chuỗi vô hạn — trước ES2025 phải break thủ công
+function* naturalNumbers() {
+  let n = 0;
+  while (true) yield n;
+}
+
+// ✅ ES2025: pipeline lazy — không bao giờ tràn bộ nhớ
+const squares = naturalNumbers()
+  .filter(n => n % 2 === 0)
+  .map(n => n * n)
+  .take(5)
+  .toArray();
+console.log(squares); // [0, 4, 16, 36, 64]
+
+// some/every/find — dừng sớm trên chuỗi vô hạn
+console.log(naturalNumbers().some(n => n > 3)); // true (dừng tại 4)
+console.log(naturalNumbers().find(n => n > 100)); // 101
+
+// drop + reduce
+const total = [1, 2, 3, 4, 5].values().drop(2).reduce((s, x) => s + x, 0);
+console.log(total); // 12
+```
+
+### So sánh với Array methods
+
+```js
+// Array: EAGER — mỗi bước tạo mảng trung gian
+[1, 2, 3, 4].map(x => x * 2).filter(x => x > 2); // 2 mảng tạm
+
+// Iterator: LAZY — 0 mảng trung gian, một thao tác mỗi phần tử
+[1, 2, 3, 4].values().map(x => x * 2).filter(x => x > 2).toArray();
+```
+
+### Bẫy
+
+```js
+// One-shot — dùng lại iterator sẽ rỗng
+const it = [1, 2, 3].values().map(x => x);
+[...it]; // [1, 2, 3]
+[...it]; // [] ❌ — phải tạo pipeline mới
+
+// Chỉ có trên Iterator object, không phải iterable thô
+[1, 2, 3].map(x => x);          // Array#map (eager)
+[1, 2, 3].values().map(x => x); // Iterator#map (lazy)
+```
+
+> 📖 MDN: [Iterator](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator) · [map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/map) · [filter()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/filter) · [take()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/take) · [drop()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/drop) · [flatMap()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/flatMap) · [reduce()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/reduce) · [toArray()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator/toArray)
+>
+> Tổng hợp đầy đủ ES2025: `22_es2025-features/README.md`

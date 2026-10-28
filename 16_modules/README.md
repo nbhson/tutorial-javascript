@@ -305,7 +305,7 @@ Nhờ ESM tĩnh, bundler có thể hiển thị đồ thị này và tree-shake 
 
 ## 📊 Performance & Best Practices
 
-- **Tree-shaking**: chỉ hoạt động với ESM静态结构 — đừng dùng `export default` +动态拼接 tên.
+- **Tree-shaking**: chỉ hoạt động với ESM cấu trúc tĩnh — đừng dùng `export default` +ghép động tên.
 - **Module size**: ESM có overhead nhỏ (~1-2KB) so với IIFE, nhưng bù lại bằng tree-shaking.
 - **Load order**: ESM hoisted, nên `import` ở đầu file giúp tooling phân tích dễ hơn.
 - **Relative paths**: luôn dùng đuôi `.js` trong ESM — browser không tự thêm.

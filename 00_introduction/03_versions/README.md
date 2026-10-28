@@ -35,7 +35,7 @@ Việc hiểu các phiên bản này giúp bạn:
 ```
 Stage 0 (Strawman)      → Ý tưởng, thảo luận mở trên mailing list
        ↓
-Stage 1 (Proposal)      → Có TC39 sponsor, spec draft开始
+Stage 1 (Proposal)      → Có TC39 sponsor, spec draft bắt đầu
        ↓
 Stage 2 (Draft)         → Spec chi tiết, API design stabilize
        ↓
@@ -137,7 +137,7 @@ async function layDuLieu() {
 // ── ES2020 (2020): optional chaining + nullish coalescing ──
 const cauHinh = {};
 console.log(cauHinh?.server?.port ?? 3000); // 3000 — ?? chỉ thay nullish, không thay falsy
-console.log(cauHinh?.server?.port || 3000); // 3000 — || thay mọi falsy (包括 0, "")
+console.log(cauHinh?.server?.port || 3000); // 3000 — || thay mọi falsy ((bao gồm 0, ""))
 ```
 
 ### Ví dụ 2: Feature detection — cách professional check compatibility
@@ -232,7 +232,7 @@ for (const [method, version] of methods) {
 - **Kiểm tra caniuse trước khi dùng tính năng ES mới** — đặc biệt quan trọng với government/school projects.
 - **Write conditional fallback** — dùng feature detection thay vì browser sniffing (`if ("flat" in Array.prototype)`).
 - **Dùng TypeScript strict mode** — phát hiện lỗi type trước khi chạy, bù đắp dynamic typing của JS.
-- **Update dependencies定期** — Babel, polyfill packages thường xuyên để support latest browser versions.
+- **Update dependencies định kỳ** — Babel, polyfill packages thường xuyên để support latest browser versions.
 - **Know your audience** — statistic usage của browser target project quyết định ES target.
 
 ## 🔗 Liên kết chéo

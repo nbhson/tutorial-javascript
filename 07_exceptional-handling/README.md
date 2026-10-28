@@ -113,7 +113,7 @@ try {
    try {
      fetchData();
    } catch (e) {
-     // Im lặng吞 lỗi — rất tệ!
+     // Im lặngnuốt lỗi — rất tệ!
    }
    // ✅ Luôn log hoặc re-throw
    ```
@@ -338,7 +338,7 @@ async function safeAsync() {
 
 **Best practices**:
 - Luôn `throw new Error(...)` thay vì `throw "string"` — có `stack` trace để debug.
-- Log lỗi trong `catch` — đừng swallow (吞) lỗi im lặng.
+- Log lỗi trong `catch` — đừng swallow (nuốt) lỗi im lặng.
 - Dùng `instanceof` để phân biệt loại lỗi và xử lý phù hợp.
 - Luôn có `finally` khi cần dọn dẹp tài nguyên (connection, timer, lock).
 - Re-throw lỗi không biết cách xử lý — đừng cố bắt mọi thứ.
@@ -347,7 +347,7 @@ async function safeAsync() {
 
 **Quy tắc "3 không"**:
 1. Không swallow lỗi (bỏ `console.error`).
-2. Không nested try/catch quá 2层级.
+2. Không nested try/catch quá 2 cấp.
 3. Không catch lỗi async trong synchronous try.
 
 ## 🔗 Liên kết chéo
